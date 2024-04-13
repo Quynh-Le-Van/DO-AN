@@ -44,13 +44,15 @@
 /* Public variables --------------------------------------------------- */
 uint8_t prestate = 0;
 long encoderCount = 0;
+float velCurrent = 0;
 long posCount = 0;
 bool g_Count = true;
+int arrVol[1000] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20};
 
 /* Public function prototypes ---------------------------------------- */
 void Motor_ReadEncoderCallback(void);
 void TransFunction_Generator(void);
-float Calculate_VelCur(void);        // unit : RPM
+void Calculate_VelCur(void);        // unit : RPM
 
 void setup() 
 {
@@ -61,11 +63,12 @@ void setup()
   pinMode(ENCODER_CH_A, INPUT_PULLUP);
   pinMode(ENCODER_CH_B, INPUT_PULLUP);
 
-  analogWrite(MOTOR_EN, 50);
+  analogWrite(MOTOR_EN, 255);
   digitalWrite(MOTOR_IN_1, 1);
   digitalWrite(MOTOR_IN_2, 0);
 
-  //Config Timer 1 
+  //Config Timer
+  // Timer 1  
   cli();                                
   TCCR1A = 0;
   TCCR1B = 0;
@@ -73,7 +76,17 @@ void setup()
   
   TCCR1B |= (1 << CS11);    // prescale = 8
   TCNT1 = 65450;
-  TIMSK1 = (1 << TOIE1);    // Overflow interrupt enable 
+  TIMSK1 = (1 << TOIE1);    // Overflow interrupt enable
+
+  // Timer 2
+  TCCR2A = 0;
+  TCCR2B = 0;
+  TIMSK2 = 0;
+
+  TCCR2B |= (1 << CS22) | (1 << CS21) | (1 << CS20); // 64 prescaler
+  TCNT2 = 99;         // preload timer  10ms
+  TIMSK2 |= (1 << TOIE2);  
+
   sei();
 
   randomSeed(analogRead(0));
@@ -81,11 +94,7 @@ void setup()
 
 void loop() 
 {
-  if (g_Count)
-  {
-    g_Count = false;
-    TransFunction_Generator();
-  }
+  TransFunction_Generator();
 }
 
 
@@ -136,13 +145,10 @@ void Motor_ReadEncoderCallback(void)
 
 void TransFunction_Generator(void)
 {
-  uint8_t numSample = 200;
-  long rdNum, vol;
-
-  for(uint8_t index = 0; index < numSample; index++)
+  for (uint8_t i = 0; i < 200; i++)
   {
-    rdNum = random(-MOTOR_VOLREF, MOTOR_VOLREF + 1);
-    vol = map(rdNum, -MOTOR_VOLREF, MOTOR_VOLREF, -255, 255);
+    int rdNum = random(-MOTOR_VOLREF, MOTOR_VOLREF + 1);
+    int vol = map(rdNum, -MOTOR_VOLREF, MOTOR_VOLREF, -100, 100);
 
     if (vol < 0)
       INVERSE_DIR();
@@ -151,35 +157,32 @@ void TransFunction_Generator(void)
 
     analogWrite(MOTOR_EN, abs(vol));
 
-    for (int i = 0; i < 5; i++)
+    for(uint8_t j = 0; j < 20; j++)
     {
-      float vel = Calculate_VelCur();
-      Serial.print(rdNum + String(" : "));
-      Serial.println(vel);
-
-      delay(200);  // sample time 0.2s
+      Serial.print(rdNum + String(" "));
+      Serial.println(velCurrent);
+      delay(100);  // sample time = 0.1s
     }
   }
 }
 
-
-float Calculate_VelCur(void)
+void Calculate_VelCur(void)
 {
-  static long preTime = 0, preEncoder = 0;
-  float vel;
-
-  vel = 60.0 * 1000.0 * ((float(encoderCount - preEncoder) / (ENCODER_PPR)) / (millis() - preTime));
-  preEncoder = encoderCount;
-  preTime = millis();
-
-  return vel;
+  long tempencoder = encoderCount;
+  velCurrent = 60.0 * 100.0 * tempencoder / ENCODER_PPR;
+  encoderCount = 0;
 }
 
 ISR (TIMER1_OVF_vect) 
 {
   TCNT1 = 65450;
   Motor_ReadEncoderCallback();
+}
 
+ISR (TIMER2_OVF_vect) 
+{
+  TCNT2 = 99;
+  Calculate_VelCur();
 }
 
 /* End of file -------------------------------------------------------- */
