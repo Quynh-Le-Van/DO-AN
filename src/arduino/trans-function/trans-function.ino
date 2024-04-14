@@ -47,7 +47,6 @@ long encoderCount = 0;
 float velCurrent = 0;
 long posCount = 0;
 bool g_Count = true;
-int arrVol[1000] = {10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20};
 
 /* Public function prototypes ---------------------------------------- */
 void Motor_ReadEncoderCallback(void);
@@ -94,7 +93,11 @@ void setup()
 
 void loop() 
 {
-  TransFunction_Generator();
+  if (g_Count)
+  {
+    g_Count = false;
+    TransFunction_Generator();
+  }
 }
 
 
@@ -145,10 +148,10 @@ void Motor_ReadEncoderCallback(void)
 
 void TransFunction_Generator(void)
 {
-  for (uint8_t i = 0; i < 200; i++)
+  for (uint8_t i = 0; i < 210; i++)
   {
     int rdNum = random(-MOTOR_VOLREF, MOTOR_VOLREF + 1);
-    int vol = map(rdNum, -MOTOR_VOLREF, MOTOR_VOLREF, -100, 100);
+    int vol = map(rdNum, -MOTOR_VOLREF, MOTOR_VOLREF, -255, 255);
 
     if (vol < 0)
       INVERSE_DIR();
