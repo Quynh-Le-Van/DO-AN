@@ -162,7 +162,7 @@ void TransFunction_Generator(void)
 
     for(uint8_t j = 0; j < 20; j++)
     {
-      Serial.print(rdNum + String(" "));
+      Serial.print(rdNum + String(","));
       Serial.println(velCurrent);
       delay(100);  // sample time = 0.1s
     }
