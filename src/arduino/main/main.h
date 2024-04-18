@@ -18,8 +18,7 @@
 #define _MAIN_H 
 /* Includes ----------------------------------------------------------- */
 #include "kinematic.h"
-#include "platform.h"
-#include "motor.h"
+#include "hw_init.h"
 
 /* Public defines ---------------------------------------------------- */
 /* Public enumerate/structure ---------------------------------------- */

@@ -15,7 +15,7 @@
 //
 //+====================================================================
 #ifndef _KINEMATIC_H
-#define _KINEMATIC_H 
+#define _KINEMATIC_H
 /* Includes ----------------------------------------------------------- */
 #include <math.h>
 #include "platform.h"
@@ -39,21 +39,21 @@ typedef struct
 
 typedef struct
 {
-  float w1_vel;
-  float w2_vel;
-  float w3_vel;
-  float w4_vel;
+  double w1_vel;
+  double w2_vel;
+  double w3_vel;
+  double w4_vel;
 } Wheel_Vel_Config_T;
 
 /////// Manipulator Config //////////
-typedef struct 
+typedef struct
 {
   float x_pos;
   float y_pos;
   float z_pos;
 } Manipulator_Pos_Config_T;
 
-typedef struct 
+typedef struct
 {
   float joint_1;
   float joint_2;
@@ -70,4 +70,4 @@ Manipulator_Pos_Config_T ForwardKinematicManipulator(Manipulator_Angle_Config_T 
 Manipulator_Angle_Config_T InverseKinematicManipulator(Manipulator_Pos_Config_T man_pos);
 
 /* End of file -------------------------------------------------------- */
-#endif  // 
+#endif //

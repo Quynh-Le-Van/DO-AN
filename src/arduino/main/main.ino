@@ -16,42 +16,73 @@
 //+====================================================================
 /* Includes ----------------------------------------------------------- */
 #include "main.h"
+#include <ros.h>
+#include "geometry_msgs/Twist.h"
+#include "geometry_msgs/Point.h"
 
-/* Public defines ---------------------------------------------------- */
-/* Public enumerate/structure ---------------------------------------- */
-/* Public macros ----------------------------------------------------- */
+/* Private enumerate/structure ---------------------------------------- */
+/* Private macros ----------------------------------------------------- */
+/* Private function prototypes ---------------------------------------- */
+static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg);
+
 /* Public variables --------------------------------------------------- */
-/* Public function prototypes ---------------------------------------- */
+/* Private variables -------------------------------------------------- */
+// ROS config
+ros::NodeHandle nodeHandle;
+ros::Subscriber<geometry_msgs::Twist> subMobileSpeedCmd("cmd_vel", MobileSpeedCommandCallback);
+
+geometry_msgs::Twist MobileSpeedMsg;
+ros::Publisher pubMobileSpeed("pub_mobile_speed", &MobileSpeedMsg);
+
+geometry_msgs::Point MobilePosMsg;
+ros::Publisher pubMobilePosMsg("pub_mobile_pos", &MobilePosMsg);
+
 /* Function definitions ----------------------------------------------- */
+void setup()
+{
+  HW_PF_Init();
 
-void setup() {
+  // ROS Init
+  nodeHandle.initNode();
+  nodeHandle.getHardware()->setBaud(57600);
+  nodeHandle.subscribe(subMobileSpeedCmd);
+  nodeHandle.advertise(pubMobileSpeed);
+  nodeHandle.advertise(pubMobilePosMsg);
 
-  // put your setup code here, to run once:
-  Serial.begin(9600);
-
-  // Config Timer 1 for 1ms interval
-  cli();                                
-  TCCR1A = 0;
-  TCCR1B = 0;
-  TIMSK1 = 0;
-  
-  TCCR1B |= (1 << CS11) | (1 << CS10);    // prescale = 64
-  TCNT1 = 40536;
-  TIMSK1 = (1 << TOIE1);                  // Overflow interrupt enable 
-  sei();
-
-
+  while (!nodeHandle.connected())
+  {
+    nodeHandle.spinOnce();
+  }
 }
 
-void loop() 
+void loop()
 {
-  // put your main code here, to run repeatedly:
+  if (CHECK_PUBLISHER_RATE(preTimeCommand))
+  {
+    Mobile_SetSpeed(g_MobileSpeedCommand);
+    g_MobileSpeedCurent = Mobile_ReadCurrentSpeed();
+    g_MobilePositionCurent = Mobile_ReadCurrentPosition();
 
+    MobileSpeedMsg.linear.x = g_MobileSpeedCurent.x_vel;
+    MobileSpeedMsg.linear.y = g_MobileSpeedCurent.y_vel;
+    MobileSpeedMsg.angular.z = g_MobileSpeedCurent.theta_vel;
+    pubMobileSpeed.publish(&MobileSpeedMsg);
+
+    MobilePosMsg.x = g_MobilePositionCurent.x_pos;
+    MobilePosMsg.y = g_MobilePositionCurent.y_pos;
+    MobilePosMsg.z = g_MobilePositionCurent.theta;
+    pubMobilePosMsg.publish(&MobilePosMsg);
+
+    preTimeCommand = millis();
+  }
+
+  nodeHandle.spinOnce();
 }
 
-ISR (TIMER1_OVF_vect) 
+static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)
 {
-  TCNT1 = 40536;
-  Motor_ReadEncoderCallback();
+  g_MobileSpeedCommand.x_vel     = cmdSpeedMsg.linear.x;
+  g_MobileSpeedCommand.y_vel     = cmdSpeedMsg.linear.y;
+  g_MobileSpeedCommand.theta_vel = cmdSpeedMsg.angular.z;
 }
 /* End of file -------------------------------------------------------- */
