@@ -1,2 +1,2 @@
-
+robot_trajectory
 -DCATKIN_DEVEL_PREFIX=/home/proteenteen/Documents/DO-AN/DO-AN/ros/devel -DCMAKE_INSTALL_PREFIX=/home/proteenteen/Documents/DO-AN/DO-AN/ros/install -G Unix Makefiles
