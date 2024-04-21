@@ -421,12 +421,12 @@ gtest/googletest/CMakeFiles/gtest.dir/clean:
 robot_trajectory/CMakeFiles/robot_trajectory.dir/all:
 	$(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/depend
 	$(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/CMakeFiles --progress-num=9,10 "Built target robot_trajectory"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/CMakeFiles --progress-num=9,10,11 "Built target robot_trajectory"
 .PHONY : robot_trajectory/CMakeFiles/robot_trajectory.dir/all
 
 # Build rule for subdir invocation for target.
 robot_trajectory/CMakeFiles/robot_trajectory.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/proteenteen/Documents/DO-AN/DO-AN/ros/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/proteenteen/Documents/DO-AN/DO-AN/ros/build/CMakeFiles 3
 	$(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/robot_trajectory.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/proteenteen/Documents/DO-AN/DO-AN/ros/build/CMakeFiles 0
 .PHONY : robot_trajectory/CMakeFiles/robot_trajectory.dir/rule
