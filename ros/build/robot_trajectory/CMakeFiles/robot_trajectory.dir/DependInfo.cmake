@@ -4,6 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/src/PID_v1.cpp" "/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/robot_trajectory/CMakeFiles/robot_trajectory.dir/src/PID_v1.cpp.o"
   "/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/src/robot_trajectory.cpp" "/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/robot_trajectory/CMakeFiles/robot_trajectory.dir/src/robot_trajectory.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
@@ -17,6 +18,7 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
+  "/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/include"
   "/opt/ros/noetic/include"
   "/opt/ros/noetic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp"
   )

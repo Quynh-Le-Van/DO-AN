@@ -461,6 +461,9 @@ robot_trajectory_BINARY_DIR:STATIC=/home/proteenteen/Documents/DO-AN/DO-AN/ros/b
 //Value Computed by CMake
 robot_trajectory_SOURCE_DIR:STATIC=/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory
 
+//The directory containing a CMake configuration file for ros.
+ros_DIR:PATH=ros_DIR-NOTFOUND
+
 //The directory containing a CMake configuration file for rosconsole.
 rosconsole_DIR:PATH=/opt/ros/noetic/share/rosconsole/cmake
 

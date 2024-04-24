@@ -482,6 +482,33 @@ std_msgs_generate_messages_py/fast:
 	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/std_msgs_generate_messages_py.dir/build.make robot_trajectory/CMakeFiles/std_msgs_generate_messages_py.dir/build
 .PHONY : std_msgs_generate_messages_py/fast
 
+src/PID_v1.o: src/PID_v1.cpp.o
+
+.PHONY : src/PID_v1.o
+
+# target to build an object file
+src/PID_v1.cpp.o:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/src/PID_v1.cpp.o
+.PHONY : src/PID_v1.cpp.o
+
+src/PID_v1.i: src/PID_v1.cpp.i
+
+.PHONY : src/PID_v1.i
+
+# target to preprocess a source file
+src/PID_v1.cpp.i:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/src/PID_v1.cpp.i
+.PHONY : src/PID_v1.cpp.i
+
+src/PID_v1.s: src/PID_v1.cpp.s
+
+.PHONY : src/PID_v1.s
+
+# target to generate assembly for a file
+src/PID_v1.cpp.s:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/src/PID_v1.cpp.s
+.PHONY : src/PID_v1.cpp.s
+
 src/robot_trajectory.o: src/robot_trajectory.cpp.o
 
 .PHONY : src/robot_trajectory.o
@@ -543,6 +570,9 @@ help:
 	@echo "... std_msgs_generate_messages_nodejs"
 	@echo "... roscpp_generate_messages_eus"
 	@echo "... std_msgs_generate_messages_py"
+	@echo "... src/PID_v1.o"
+	@echo "... src/PID_v1.i"
+	@echo "... src/PID_v1.s"
 	@echo "... src/robot_trajectory.o"
 	@echo "... src/robot_trajectory.i"
 	@echo "... src/robot_trajectory.s"
