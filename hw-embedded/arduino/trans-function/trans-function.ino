@@ -148,24 +148,27 @@ void Motor_ReadEncoderCallback(void)
 
 void TransFunction_Generator(void)
 {
-  for (uint8_t i = 0; i < 210; i++)
+  int vol = 14; // vol 
+  int pwm = (14/24)*255;
+  for (uint8_t i = 0; i < 20; i++)
   {
-    int rdNum = random(-MOTOR_VOLREF, MOTOR_VOLREF + 1);
-    int vol = map(rdNum, -MOTOR_VOLREF, MOTOR_VOLREF, -255, 255);
+    // int rdNum = random(-MOTOR_VOLREF, MOTOR_VOLREF + 1);
+    // int vol = map(rdNum, -MOTOR_VOLREF, MOTOR_VOLREF, -255, 255);
 
     if (vol < 0)
       INVERSE_DIR();
     else
       FORWARD_DIR();
 
-    analogWrite(MOTOR_EN, abs(vol));
+    analogWrite(MOTOR_EN, abs(pwm));
 
     for(uint8_t j = 0; j < 20; j++)
     {
-      Serial.print(rdNum + String(","));
+      Serial.print(vol + String(","));
       Serial.println(velCurrent);
       delay(100);  // sample time = 0.1s
     }
+    vol = vol * (-1);
   }
 }
 
