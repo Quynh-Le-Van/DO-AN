@@ -160,7 +160,7 @@ void TransFunction_Generator(void)
     else
       FORWARD_DIR();
 
-    analogWrite(MOTOR_EN, abs(pwm));
+    analogWrite(MOTOR_EN, abs(148));
 
     for(uint8_t j = 0; j < 20; j++)
     {
