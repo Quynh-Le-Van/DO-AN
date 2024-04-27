@@ -8,29 +8,30 @@
 #include "ros/ros.h"
 #include "ros/time.h"
 #include "ros/node_handle.h"
+#include <ctime>
 
-/*Constructor (...)*********************************************************
- *    The parameters specified here are those for for which we can't set up
- *    reliable defaults, so we need to have the user set them.
- ***************************************************************************/
-PID::PID(double* Input, double* Output, double* Setpoint,
-        double Kp, double Ki, double Kd, int POn, int ControllerDirection)
-{
-    myOutput = Output;
-    myInput = Input;
-    mySetpoint = Setpoint;
-    inAuto = false;
+   /*Constructor (...)*********************************************************
+   *    The parameters specified here are those for for which we can't set up
+   *    reliable defaults, so we need to have the user set them.
+   ***************************************************************************/
+   PID::PID(double* Input, double* Output, double* Setpoint,
+         double Kp, double Ki, double Kd, int POn, int ControllerDirection)
+   {
+      myOutput = Output;
+      myInput = Input;
+      mySetpoint = Setpoint;
+      inAuto = false;
 
-    PID::SetOutputLimits(0, 255);				//default output limit corresponds to
-												//the arduino pwm limits
+      PID::SetOutputLimits(0, 255);				//default output limit corresponds to
+                                       //the arduino pwm limits
 
-    SampleTime = 100;							//default Controller Sample Time is 0.1 seconds
+      SampleTime = 100;							//default Controller Sample Time is 0.1 seconds
 
-    PID::SetControllerDirection(ControllerDirection);
-    PID::SetTunings(Kp, Ki, Kd, POn);
+      PID::SetControllerDirection(ControllerDirection);
+      PID::SetTunings(Kp, Ki, Kd, POn);
 
-    lastTime = (ros::Time::now().toSec()) * 1000 -SampleTime;
-}
+      lastTime = (time(NULL)) -SampleTime;
+   }
 
 /*Constructor (...)*********************************************************
  *    To allow backwards compatability for v1.1, or for people that just want
@@ -54,7 +55,7 @@ PID::PID(double* Input, double* Output, double* Setpoint,
 bool PID::Compute()
 {
    if(!inAuto) return false;
-   unsigned long now = ros::Time::now().toSec() * 1000;
+   unsigned long now = time(NULL);
    unsigned long timeChange = (now - lastTime);
    if(timeChange>=SampleTime)
    {
