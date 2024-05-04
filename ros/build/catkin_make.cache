@@ -1,0 +1,2 @@
+
+-DCATKIN_DEVEL_PREFIX=/home/proteenteen/Documents/DO-AN/exmaple/devel -DCMAKE_INSTALL_PREFIX=/home/proteenteen/Documents/DO-AN/exmaple/install -G Unix Makefiles
