@@ -3,7 +3,7 @@
 #include "geometry_msgs/Twist.h"
 #include "geometry_msgs/Point.h"
 #include "robot_trajectory/PID_v1.hpp"
-#include "robot_trajectory/mobile_trajectory.hpp"
+#include "robot_trajectory/robot_trajectory.hpp"
 
 /* Private macros ----------------------------------------------------- */
 #define ROS_RATE        (10)     // unit Hz

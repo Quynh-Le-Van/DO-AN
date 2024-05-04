@@ -1,5 +1,5 @@
 /* Includes ----------------------------------------------------------- */
-#include "robot_trajectory/mobile_trajectory.hpp"
+#include "robot_trajectory/robot_trajectory.hpp"
 #include "robot_trajectory/PID_v1.hpp"
 #include <iostream>
 
@@ -12,9 +12,9 @@
 #define MOBILE_ERROR                      (0.05)
 
 // PID Configures
-#define MOTOR_PID_KP     (1)
-#define MOTOR_PID_KI     (2)
-#define MOTOR_PID_KD     (3)
+#define MOBILE_PID_KP     (1)
+#define MOBILE_PID_KI     (2)
+#define MOBILE_PID_KD     (3)
 
 // Check conditions 
 #define CHECK_MOBILE_REACH_GOAL(pos)                                               \
@@ -26,34 +26,34 @@
 /* Public variables --------------------------------------------------- */
 Mobile_Speed_T g_MobileSpeedCommand;
 Mobile_Position_T g_MobileCurPosition;
-Mobile_Position_T mobilePosCommand;
 
 /* Private variables -------------------------------------------------- */
+Mobile_Position_T mobilePosCommand;
 Mobile_Control_Status_T robotStatus;
 float timeOperating;
 
 PID mobileXPID(&g_MobileCurPosition.x, &g_MobileSpeedCommand.x_vel,
-              &mobilePosCommand.x, MOTOR_PID_KP, MOTOR_PID_KI, MOTOR_PID_KD, DIRECT);
+              &mobilePosCommand.x, MOBILE_PID_KP, MOBILE_PID_KI, MOBILE_PID_KD, DIRECT);
 
 PID mobileYPID(&g_MobileCurPosition.y, &g_MobileSpeedCommand.y_vel,
-              &mobilePosCommand.y, MOTOR_PID_KP, MOTOR_PID_KI, MOTOR_PID_KD, DIRECT);
+              &mobilePosCommand.y, MOBILE_PID_KP, MOBILE_PID_KI, MOBILE_PID_KD, DIRECT);
               
 PID mobileZPID(&g_MobileCurPosition.theta, &g_MobileSpeedCommand.theta_vel,
-              &mobilePosCommand.theta, MOTOR_PID_KP, MOTOR_PID_KI, MOTOR_PID_KD, DIRECT);
+              &mobilePosCommand.theta, MOBILE_PID_KP, MOBILE_PID_KI, MOBILE_PID_KD, DIRECT);
 
 /* Function definitions ----------------------------------------------- */
 void Mobile_Init(void)
 {
     mobileXPID.SetMode(AUTOMATIC);
-    mobileXPID.SetSampleTime(1);
+    mobileXPID.SetSampleTime(10);
     mobileXPID.SetOutputLimits(-MOBILE_MAX_SPEED, MOBILE_MAX_SPEED);
 
     mobileYPID.SetMode(AUTOMATIC);
-    mobileYPID.SetSampleTime(1);
+    mobileYPID.SetSampleTime(10);
     mobileYPID.SetOutputLimits(-MOBILE_MAX_SPEED, MOBILE_MAX_SPEED);
 
     mobileZPID.SetMode(AUTOMATIC);
-    mobileZPID.SetSampleTime(1);
+    mobileZPID.SetSampleTime(10);
     mobileZPID.SetOutputLimits(-MOBILE_MAX_ANGULAR, MOBILE_MAX_ANGULAR);
 }
 

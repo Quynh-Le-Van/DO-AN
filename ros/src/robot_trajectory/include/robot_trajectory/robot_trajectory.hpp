@@ -39,11 +39,11 @@ typedef struct
 /* Public variables --------------------------------------------------- */
 extern Mobile_Speed_T g_MobileSpeedCommand;
 extern Mobile_Position_T g_MobileCurPosition;
-extern  Mobile_Position_T mobilePosCommand;
 
 /* Public function prototypes ---------------------------------------- */
 void Mobile_Init(void);
-void Mobile_GenerateTrajectory();
+void Mobile_GenerateTrajectory(void);
+void Manipulator_GenerateTrajectory(void);
 
 /* End of file -------------------------------------------------------- */
 #endif  // 

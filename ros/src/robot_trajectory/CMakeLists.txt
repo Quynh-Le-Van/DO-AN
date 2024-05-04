@@ -122,8 +122,8 @@ include_directories(
 )
 
 ## Declare a C++ library
-add_library(mobile_trajectory
-  src/mobile_trajectory.cpp
+add_library(robot_trajectory
+  src/robot_trajectory.cpp
 )
 
 add_library(PID_v1
@@ -152,11 +152,11 @@ add_executable(main src/main.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(main
-  mobile_trajectory
+  robot_trajectory
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(mobile_trajectory 
+target_link_libraries(robot_trajectory 
   PID_v1
   ${catkin_LIBRARIES}                    
 )
