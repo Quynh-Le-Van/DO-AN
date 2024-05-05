@@ -235,4 +235,8 @@ ISR(TIMER2_OVF_vect)
   Motor_ReadVelocityCallBack();
 }
 
+void Test_SetPin(Motor_Mobile_T motor)
+{
+  MOTOR_INVERSE_DIR(motor);
+}
 /* End of file -------------------------------------------------------- */

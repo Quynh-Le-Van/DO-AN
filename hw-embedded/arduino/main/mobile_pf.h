@@ -22,11 +22,11 @@
 #include <PID_v1.h>
 
 /* Public defines ---------------------------------------------------- */
-#define MOTOR_EN_1        (1)
-#define MOTOR_L_1         (1)
-#define MOTOR_R_1         (1)
-#define MOTOR_ENCODER_A_1 (1)
-#define MOTOR_ENCODER_B_1 (1)
+#define MOTOR_EN_1        (4)
+#define MOTOR_L_1         (5)
+#define MOTOR_R_1         (6)
+#define MOTOR_ENCODER_A_1 (8)
+#define MOTOR_ENCODER_B_1 (7)
 
 #define MOTOR_EN_2        (1)
 #define MOTOR_L_2         (1)
@@ -99,6 +99,7 @@ void Mobile_PIDInit(void);
 void Mobile_SetSpeed(Mobile_Vel_Config_T speedCommand);
 Mobile_Vel_Config_T Mobile_ReadCurrentSpeed(void);
 Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void);
+void Test_SetPin(Motor_Mobile_T motor);
 
 /* End of file -------------------------------------------------------- */
 #endif //

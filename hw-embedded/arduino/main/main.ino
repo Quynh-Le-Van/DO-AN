@@ -41,6 +41,7 @@ ros::Publisher pubMobilePosMsg("pub_mobile_pos", &MobilePosMsg);
 void setup()
 {
   HW_PF_Init();
+  Serial.begin(9600);
 
   // ROS Init
   nodeHandle.initNode();
@@ -57,26 +58,33 @@ void setup()
 
 void loop()
 {
-  if (CHECK_PUBLISHER_RATE(preTimeCommand))
-  {
-    Mobile_SetSpeed(g_MobileSpeedCommand);
-    g_MobileSpeedCurent = Mobile_ReadCurrentSpeed();
-    g_MobilePositionCurent = Mobile_ReadCurrentPosition();
+  // if (CHECK_PUBLISHER_RATE(preTimeCommand))
+  // {
+  //   Mobile_SetSpeed(g_MobileSpeedCommand);
+  //   g_MobileSpeedCurent = Mobile_ReadCurrentSpeed();
+  //   g_MobilePositionCurent = Mobile_ReadCurrentPosition();
 
-    MobileSpeedMsg.linear.x = g_MobileSpeedCurent.x_vel;
-    MobileSpeedMsg.linear.y = g_MobileSpeedCurent.y_vel;
-    MobileSpeedMsg.angular.z = g_MobileSpeedCurent.theta_vel;
-    pubMobileSpeed.publish(&MobileSpeedMsg);
+  //   MobileSpeedMsg.linear.x = g_MobileSpeedCurent.x_vel;
+  //   MobileSpeedMsg.linear.y = g_MobileSpeedCurent.y_vel;
+  //   MobileSpeedMsg.angular.z = g_MobileSpeedCurent.theta_vel;
+  //   pubMobileSpeed.publish(&MobileSpeedMsg);
 
-    MobilePosMsg.x = g_MobilePositionCurent.x_pos;
-    MobilePosMsg.y = g_MobilePositionCurent.y_pos;
-    MobilePosMsg.z = g_MobilePositionCurent.theta;
-    pubMobilePosMsg.publish(&MobilePosMsg);
+  //   MobilePosMsg.x = g_MobilePositionCurent.x_pos;
+  //   MobilePosMsg.y = g_MobilePositionCurent.y_pos;
+  //   MobilePosMsg.z = g_MobilePositionCurent.theta;
+  //   pubMobilePosMsg.publish(&MobilePosMsg);
 
-    preTimeCommand = millis();
-  }
+  //   preTimeCommand = millis();
+  // }
 
-  nodeHandle.spinOnce();
+  // nodeHandle.spinOnce();
+  Test_SetPin(MOTOR_MOBILE_1);  
+
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_1].velCurrent + String(", "));
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_2].velCurrent + String(", "));
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_3].velCurrent + String(", "));
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_4].velCurrent + String(", "));
+  Serial.print('a');
 }
 
 static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)
