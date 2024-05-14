@@ -16,9 +16,9 @@
 //+====================================================================
 /* Includes ----------------------------------------------------------- */
 /* Public defines ---------------------------------------------------- */
-#define MOTOR_EN       (4)
-#define MOTOR_IN_1     (5)
-#define MOTOR_IN_2     (6)
+#define MOTOR_EN       (3)
+#define MOTOR_IN_1     (34)
+#define MOTOR_IN_2     (35)
 #define ENCODER_CH_A   (8)
 #define ENCODER_CH_B   (7)
 
@@ -150,7 +150,7 @@ void TransFunction_Generator(void)
 {
   int vol = 14; // vol 
   int pwm = (14/24)*255;
-  for (uint8_t i = 0; i < 20; i++)
+  for (uint8_t i = 0; i < 10; i++)
   {
     // int rdNum = random(-MOTOR_VOLREF, MOTOR_VOLREF + 1);
     // int vol = map(rdNum, -MOTOR_VOLREF, MOTOR_VOLREF, -255, 255);
@@ -162,11 +162,11 @@ void TransFunction_Generator(void)
 
     analogWrite(MOTOR_EN, abs(148));
 
-    for(uint8_t j = 0; j < 20; j++)
+    for(uint8_t j = 0; j < 200; j++)
     {
       Serial.print(vol + String(","));
       Serial.println(velCurrent);
-      delay(100);  // sample time = 0.1s
+      delay(10);  // sample time = 0.01s
     }
     vol = vol * (-1);
   }

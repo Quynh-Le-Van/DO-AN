@@ -22,29 +22,29 @@
 #include <PID_v1.h>
 
 /* Public defines ---------------------------------------------------- */
-#define MOTOR_EN_1        (4)
-#define MOTOR_L_1         (5)
-#define MOTOR_R_1         (6)
-#define MOTOR_ENCODER_A_1 (8)
-#define MOTOR_ENCODER_B_1 (7)
+#define MOTOR_EN_1        (3)
+#define MOTOR_L_1         (34)
+#define MOTOR_R_1         (35)
+#define MOTOR_ENCODER_A_1 (37)
+#define MOTOR_ENCODER_B_1 (36)
 
-#define MOTOR_EN_2        (1)
-#define MOTOR_L_2         (1)
-#define MOTOR_R_2         (1)
-#define MOTOR_ENCODER_A_2 (1)
-#define MOTOR_ENCODER_B_2 (1)
+#define MOTOR_EN_2        (2)
+#define MOTOR_L_2         (40)
+#define MOTOR_R_2         (41)
+#define MOTOR_ENCODER_A_2 (42)
+#define MOTOR_ENCODER_B_2 (43)
 
-#define MOTOR_EN_3        (1)
-#define MOTOR_L_3         (1)
-#define MOTOR_R_3         (1)
-#define MOTOR_ENCODER_A_3 (1)
-#define MOTOR_ENCODER_B_3 (1)
+#define MOTOR_EN_3        (4)
+#define MOTOR_L_3         (29)
+#define MOTOR_R_3         (28)
+#define MOTOR_ENCODER_A_3 (30)
+#define MOTOR_ENCODER_B_3 (31)
 
-#define MOTOR_EN_4        (1)
-#define MOTOR_L_4         (1)
-#define MOTOR_R_4         (1)
-#define MOTOR_ENCODER_A_4 (1)
-#define MOTOR_ENCODER_B_4 (1)
+#define MOTOR_EN_4        (5)
+#define MOTOR_L_4         (22)
+#define MOTOR_R_4         (23)
+#define MOTOR_ENCODER_A_4 (24)
+#define MOTOR_ENCODER_B_4 (25)
 
 #define ENCODER_MAX_VALUE_PPR (998)
 #define MOTOR_VOLREF          (24)
@@ -54,7 +54,7 @@
 //  //M_1-----M_2\\
 //   |          |
 //   |          |
-//  \\M_3-----M_4//
+//  \\M_4-----M_3//
 
 typedef enum
 {
@@ -92,14 +92,15 @@ extern Mobile_Vel_Config_T g_MobileSpeedCommand;
 extern Mobile_Vel_Config_T g_MobileSpeedCurent;
 extern Mobile_Pos_Config_T g_MobilePositionCurent;  
 extern uint32_t preTimeCommand;
-
+extern Motor_Config_Pin_T MOTOR_PIN_LIST[MOTOR_MOBILE_UNKNOW];
 
 /* Public function prototypes ---------------------------------------- */
 void Mobile_PIDInit(void);
 void Mobile_SetSpeed(Mobile_Vel_Config_T speedCommand);
 Mobile_Vel_Config_T Mobile_ReadCurrentSpeed(void);
 Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void);
-void Test_SetPin(Motor_Mobile_T motor);
+void Test_SetPin(double vel);
+void Mobile_TrackingTrajectory();
 
 /* End of file -------------------------------------------------------- */
 #endif //

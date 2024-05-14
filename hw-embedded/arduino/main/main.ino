@@ -41,19 +41,18 @@ ros::Publisher pubMobilePosMsg("pub_mobile_pos", &MobilePosMsg);
 void setup()
 {
   HW_PF_Init();
-  Serial.begin(9600);
 
   // ROS Init
-  nodeHandle.initNode();
-  nodeHandle.getHardware()->setBaud(57600);
-  nodeHandle.subscribe(subMobileSpeedCmd);
-  nodeHandle.advertise(pubMobileSpeed);
-  nodeHandle.advertise(pubMobilePosMsg);
+  // nodeHandle.initNode();
+  // nodeHandle.getHardware()->setBaud(57600);
+  // nodeHandle.subscribe(subMobileSpeedCmd);
+  // nodeHandle.advertise(pubMobileSpeed);
+  // nodeHandle.advertise(pubMobilePosMsg);
 
-  while (!nodeHandle.connected())
-  {
-    nodeHandle.spinOnce();
-  }
+  // while (!nodeHandle.connected())
+  // {
+  //   nodeHandle.spinOnce();
+  // }
 }
 
 void loop()
@@ -78,13 +77,19 @@ void loop()
   // }
 
   // nodeHandle.spinOnce();
-  Test_SetPin(MOTOR_MOBILE_1);  
+  Test_SetPin(-100);
 
-  // Serial.print(g_MotorMobile[MOTOR_MOBILE_1].velCurrent + String(", "));
-  // Serial.print(g_MotorMobile[MOTOR_MOBILE_2].velCurrent + String(", "));
-  // Serial.print(g_MotorMobile[MOTOR_MOBILE_3].velCurrent + String(", "));
-  // Serial.print(g_MotorMobile[MOTOR_MOBILE_4].velCurrent + String(", "));
-  Serial.print('a');
+  Serial.print(g_MotorMobile[MOTOR_MOBILE_1].velCurrent + String(", "));
+  Serial.print(g_MotorMobile[MOTOR_MOBILE_2].velCurrent + String(", "));
+  Serial.print(g_MotorMobile[MOTOR_MOBILE_3].velCurrent + String(", "));
+  Serial.println(g_MotorMobile[MOTOR_MOBILE_4].velCurrent);
+
+  // Serial.print(g_MotorSpeedCommand.w1_vel + String(", "));
+  // Serial.print(g_MotorSpeedCommand.w2_vel + String(", "));
+  // Serial.print(g_MotorSpeedCommand.w3_vel + String(", "));
+  // Serial.println(g_MotorSpeedCommand.w4_vel);
+
+  delay(1);
 }
 
 static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)

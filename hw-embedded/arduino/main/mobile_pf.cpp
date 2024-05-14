@@ -24,7 +24,7 @@
   {                                                                 \
     digitalWrite(MOTOR_PIN_LIST[x].dir_l, HIGH);                    \
     digitalWrite(MOTOR_PIN_LIST[x].dir_r, LOW);                     \
-    analogWrite(MOTOR_PIN_LIST[x].enable, g_MotorMobile[x].pwmOut); \
+    analogWrite(MOTOR_PIN_LIST[x].enable, abs(g_MotorMobile[x].pwmOut)); \
   } while (0)
 
 #define MOTOR_FORWARD_DIR(x)                                        \
@@ -32,7 +32,7 @@
   {                                                                 \
     digitalWrite(MOTOR_PIN_LIST[x].dir_l, LOW);                     \
     digitalWrite(MOTOR_PIN_LIST[x].dir_r, HIGH);                    \
-    analogWrite(MOTOR_PIN_LIST[x].enable, g_MotorMobile[x].pwmOut); \
+    analogWrite(MOTOR_PIN_LIST[x].enable, abs(g_MotorMobile[x].pwmOut)); \
   } while (0)
 
 /* Public variables --------------------------------------------------- */
@@ -44,14 +44,24 @@ Mobile_Pos_Config_T g_MobilePositionCurent;
 uint32_t preTimeCommand;
 
 /* Private variables -------------------------------------------------- */
+// PID MOTOR
 PID motorPID1(&g_MotorMobile[MOTOR_MOBILE_1].velCurrent, &g_MotorMobile[MOTOR_MOBILE_1].pwmOut,
-              &g_MotorSpeedCommand.w1_vel, MOTOR_PID_KP, MOTOR_PID_KI, MOTOR_PID_KD, DIRECT);
+              &g_MotorSpeedCommand.w1_vel, MOTOR1_PID_KP, MOTOR1_PID_KI, MOTOR1_PID_KD, DIRECT);
 PID motorPID2(&g_MotorMobile[MOTOR_MOBILE_2].velCurrent, &g_MotorMobile[MOTOR_MOBILE_2].pwmOut,
-              &g_MotorSpeedCommand.w2_vel, MOTOR_PID_KP, MOTOR_PID_KI, MOTOR_PID_KD, DIRECT);
+              &g_MotorSpeedCommand.w2_vel, MOTOR2_PID_KP, MOTOR2_PID_KI, MOTOR2_PID_KD, DIRECT);
 PID motorPID3(&g_MotorMobile[MOTOR_MOBILE_3].velCurrent, &g_MotorMobile[MOTOR_MOBILE_3].pwmOut,
-              &g_MotorSpeedCommand.w3_vel, MOTOR_PID_KP, MOTOR_PID_KI, MOTOR_PID_KD, DIRECT);
+              &g_MotorSpeedCommand.w3_vel, MOTOR3_PID_KP, MOTOR3_PID_KI, MOTOR3_PID_KD, DIRECT);
 PID motorPID4(&g_MotorMobile[MOTOR_MOBILE_4].velCurrent, &g_MotorMobile[MOTOR_MOBILE_4].pwmOut,
-              &g_MotorSpeedCommand.w4_vel, MOTOR_PID_KP, MOTOR_PID_KI, MOTOR_PID_KD, DIRECT);
+              &g_MotorSpeedCommand.w4_vel, MOTOR4_PID_KP, MOTOR4_PID_KI, MOTOR4_PID_KD, DIRECT);
+
+// PID Mobile Tracking Trajectory
+Mobile_Pos_Config_T mobileTrajCur;
+Mobile_Pos_Config_T mobileTrajRef;
+Mobile_Vel_Config_T mobileVelCmd;
+
+PID moTrajXPID(&mobileTrajCur.x_pos, &mobileVelCmd.x_vel, &mobileTrajRef.x_pos, TRAJX_PID_KP, TRAJX_PID_KI, TRAJX_PID_KD, DIRECT);
+PID moTrajXPID(&mobileTrajCur.y_pos, &mobileVelCmd.y_vel, &mobileTrajRef.y_pos, TRAJY_PID_KP, TRAJY_PID_KI, TRAJY_PID_KD, DIRECT);
+PID moTrajXPID(&mobileTrajCur.theta, &mobileVelCmd.theta_vel, &mobileTrajRef.theta, TRAJTHE_PID_KP, TRAJTHE_PID_KI, TRAJTHE_PID_KD, DIRECT);
 
 static Mobile_Pos_Config_T mobilePos;
 
@@ -60,7 +70,7 @@ static Mobile_Pos_Config_T mobilePos;
     .encoder_A = _ea, .encoder_B = _eb, .enable = _pwm, .dir_l = _dirl, .dir_r = _dirr \
   }
 
-static Motor_Config_Pin_T MOTOR_PIN_LIST[MOTOR_MOBILE_UNKNOW] = {
+Motor_Config_Pin_T MOTOR_PIN_LIST[MOTOR_MOBILE_UNKNOW] = {
   INFO(MOTOR_ENCODER_A_1, MOTOR_ENCODER_B_1, MOTOR_EN_1, MOTOR_L_1, MOTOR_R_1),
   INFO(MOTOR_ENCODER_A_2, MOTOR_ENCODER_B_2, MOTOR_EN_2, MOTOR_L_2, MOTOR_R_2),
   INFO(MOTOR_ENCODER_A_3, MOTOR_ENCODER_B_3, MOTOR_EN_3, MOTOR_L_3, MOTOR_R_3),
@@ -78,19 +88,19 @@ static void Motor_SetVel(void);
 void Mobile_PIDInit(void)
 {
   motorPID1.SetMode(AUTOMATIC);
-  motorPID1.SetSampleTime(1);
+  motorPID1.SetSampleTime(10);
   motorPID1.SetOutputLimits(-PWM_DEFAULT_VALUE, PWM_DEFAULT_VALUE);
 
   motorPID2.SetMode(AUTOMATIC);
-  motorPID2.SetSampleTime(1);
+  motorPID2.SetSampleTime(10);
   motorPID2.SetOutputLimits(-PWM_DEFAULT_VALUE, PWM_DEFAULT_VALUE);
 
   motorPID3.SetMode(AUTOMATIC);
-  motorPID3.SetSampleTime(1);
+  motorPID3.SetSampleTime(10);
   motorPID3.SetOutputLimits(-PWM_DEFAULT_VALUE, PWM_DEFAULT_VALUE);
 
   motorPID4.SetMode(AUTOMATIC);
-  motorPID4.SetSampleTime(1);
+  motorPID4.SetSampleTime(10);
   motorPID4.SetOutputLimits(-PWM_DEFAULT_VALUE, PWM_DEFAULT_VALUE);
 }
 
@@ -221,6 +231,25 @@ static void Motor_SetVel()
   }
 }
 
+void Mobile_TrackingTrajectory()
+{
+#define SAMPLE_TIME (0.01)  // second
+#define TIME_SIM    (10)    // second 
+ 
+  for(float t = 0; i < TIME_SIM; t+=SAMPLE_TIME)
+  {
+    mobileTrajRef.x_pos = 1*cos(0.1*t);
+    mobileTrajRef.y_pos = 1*sin(0.1*t);
+    mobileTrajRef.theta = 0;
+
+    
+
+  }
+
+#endif SAMPLE_TIME 
+#endif TIME_SIM 
+}
+
 // Timer 1 Interupt
 ISR(TIMER1_OVF_vect)
 {
@@ -235,8 +264,31 @@ ISR(TIMER2_OVF_vect)
   Motor_ReadVelocityCallBack();
 }
 
-void Test_SetPin(Motor_Mobile_T motor)
-{
-  MOTOR_INVERSE_DIR(motor);
+void Test_SetPin(double x)
+{ 
+  Mobile_Vel_Config_T speedCommand;
+  
+  speedCommand.x_vel = 0.5;
+  speedCommand.y_vel = 0.5;
+  speedCommand.theta_vel = 0;
+
+  Mobile_SetSpeed(speedCommand);
+
+  // g_MotorMobile[MOTOR_MOBILE_1].pwmOut = x;
+  // g_MotorMobile[MOTOR_MOBILE_2].pwmOut = x;
+  // g_MotorMobile[MOTOR_MOBILE_3].pwmOut = x;
+  // g_MotorMobile[MOTOR_MOBILE_4].pwmOut = x;
+
+  // for (uint8_t index = 0; index < MOTOR_MOBILE_UNKNOW; index++)
+  // {
+  //   if (g_MotorMobile[index].pwmOut >= 0)
+  //   {
+  //     MOTOR_FORWARD_DIR(index);
+  //   }
+  //   else
+  //   {
+  //     MOTOR_INVERSE_DIR(index);
+  //   }
+  // }
 }
 /* End of file -------------------------------------------------------- */

@@ -19,13 +19,16 @@
 #include "kinematic.h"
 
 /* Private defines ---------------------------------------------------- */
-#define MOBILE_LENGTH (0.3)
-#define MOBILE_WIDTH  (0.3)
-#define WHEEL_RADIUS  (0.0375)
+#define MOBILE_LENGTH (0.15)
+#define MOBILE_WIDTH  (0.15)
+#define WHEEL_RADIUS  (0.05)
 #define LINK_ARM_1    (0.05)
 #define LINK_ARM_2    (0.2)
 #define LINK_ARM_3    (0.15)
 #define LINK_ARM_4    (0.05)
+
+#define RPM_TO_RAD_PER_SEC(rpm)       ((rpm) * 2 * 3.14159 / 60)
+#define RAD_PER_SEC_TO_RPM(radPerSec) ((radPerSec) * 60 / (2 * 3.14159))
 
 /* Private enumerate/structure ---------------------------------------- */
 /* Private macros ----------------------------------------------------- */
@@ -36,6 +39,11 @@
 Mobile_Vel_Config_T ForwardKinematicMobileRobot(Wheel_Vel_Config_T wheel_vel)
 {
   Mobile_Vel_Config_T mobile_vel;
+
+  wheel_vel.w1_vel = RPM_TO_RAD_PER_SEC(wheel_vel.w1_vel);
+  wheel_vel.w2_vel = RPM_TO_RAD_PER_SEC(wheel_vel.w2_vel);
+  wheel_vel.w3_vel = RPM_TO_RAD_PER_SEC(wheel_vel.w3_vel);
+  wheel_vel.w4_vel = RPM_TO_RAD_PER_SEC(wheel_vel.w4_vel);
 
   mobile_vel.x_vel =
     (wheel_vel.w1_vel + wheel_vel.w2_vel + wheel_vel.w3_vel + wheel_vel.w4_vel) * WHEEL_RADIUS / 4;
@@ -53,17 +61,22 @@ Wheel_Vel_Config_T InverseKinematicMobileRobot(Mobile_Vel_Config_T mobile_vel)
 {
   Wheel_Vel_Config_T wheel_vel;
 
-  wheel_vel.w1_vel = 1 / (WHEEL_RADIUS * (mobile_vel.x_vel - mobile_vel.y_vel -
-                                          (MOBILE_LENGTH + MOBILE_WIDTH) * mobile_vel.theta_vel));
+  wheel_vel.w1_vel = (1 / WHEEL_RADIUS) * (mobile_vel.x_vel + mobile_vel.y_vel -
+                                          (MOBILE_LENGTH + MOBILE_WIDTH) * mobile_vel.theta_vel);
 
-  wheel_vel.w2_vel = 1 / (WHEEL_RADIUS * (mobile_vel.x_vel + mobile_vel.y_vel +
-                                          (MOBILE_LENGTH + MOBILE_WIDTH) * mobile_vel.theta_vel));
+  wheel_vel.w2_vel = (1 / WHEEL_RADIUS) * (mobile_vel.x_vel - mobile_vel.y_vel +
+                                          (MOBILE_LENGTH + MOBILE_WIDTH) * mobile_vel.theta_vel);
 
-  wheel_vel.w3_vel = 1 / (WHEEL_RADIUS * (mobile_vel.x_vel + mobile_vel.y_vel -
-                                          (MOBILE_LENGTH + MOBILE_WIDTH) * mobile_vel.theta_vel));
+  wheel_vel.w3_vel = (1 / WHEEL_RADIUS) * (mobile_vel.x_vel + mobile_vel.y_vel +
+                                          (MOBILE_LENGTH + MOBILE_WIDTH) * mobile_vel.theta_vel);
 
-  wheel_vel.w4_vel = 1 / (WHEEL_RADIUS * (mobile_vel.x_vel - mobile_vel.y_vel +
-                                          (MOBILE_LENGTH + MOBILE_WIDTH) * mobile_vel.theta_vel));
+  wheel_vel.w4_vel = (1 / WHEEL_RADIUS) * (mobile_vel.x_vel - mobile_vel.y_vel -
+                                          (MOBILE_LENGTH + MOBILE_WIDTH) * mobile_vel.theta_vel);
+
+  wheel_vel.w1_vel = RAD_PER_SEC_TO_RPM(wheel_vel.w1_vel);
+  wheel_vel.w2_vel = RAD_PER_SEC_TO_RPM(wheel_vel.w2_vel);
+  wheel_vel.w3_vel = RAD_PER_SEC_TO_RPM(wheel_vel.w3_vel);
+  wheel_vel.w4_vel = RAD_PER_SEC_TO_RPM(wheel_vel.w4_vel);
 
   return wheel_vel;
 }

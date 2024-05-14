@@ -30,9 +30,33 @@
 #define PUBLISHER_RATE          (10)
 #define CHECK_PUBLISHER_RATE(x) (millis() - x >= 1000 / PUBLISHER_RATE)
 
-#define MOTOR_PID_KP (1)
-#define MOTOR_PID_KD (1)
-#define MOTOR_PID_KI (1)
+#define MOTOR1_PID_KP (0.070850354012992)
+#define MOTOR1_PID_KD (0)
+#define MOTOR1_PID_KI (1.79334556232624)
+
+#define MOTOR2_PID_KP (0.070850354012992)
+#define MOTOR2_PID_KD (0)
+#define MOTOR2_PID_KI (1.79334556232624)
+
+#define MOTOR3_PID_KP (0.070850354012992)
+#define MOTOR3_PID_KD (0)
+#define MOTOR3_PID_KI (1.79334556232624)
+
+#define MOTOR4_PID_KP (0.0452007471163154)
+#define MOTOR4_PID_KD (0)
+#define MOTOR4_PID_KI (1.4412184367035)
+
+#define TRAJX_PID_KP   (1)
+#define TRAJX_PID_KI   (1)
+#define TRAJX_PID_KD   (1)
+
+#define TRAJY_PID_KP   (1)
+#define TRAJY_PID_KI   (1)
+#define TRAJY_PID_KD   (1)
+
+#define TRAJTHE_PID_KP   (1)
+#define TRAJTHE_PID_KI   (1)
+#define TRAJTHE_PID_KD   (1)
 
 /* Public enumerate/structure ---------------------------------------- */
 /* Public macros ----------------------------------------------------- */
