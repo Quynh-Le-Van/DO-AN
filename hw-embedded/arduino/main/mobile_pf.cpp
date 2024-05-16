@@ -18,20 +18,27 @@
 #include "mobile_pf.h"
 
 /* Private enumerate/structure ---------------------------------------- */
+typedef enum
+{
+  MOBILE_START,
+  MOBILE_ONGOING,
+  MOBILE_STOP
+} MOBILE_STATE_T;
+
 /* Private macros ----------------------------------------------------- */
-#define MOTOR_INVERSE_DIR(x)                                        \
-  do                                                                \
-  {                                                                 \
-    digitalWrite(MOTOR_PIN_LIST[x].dir_l, HIGH);                    \
-    digitalWrite(MOTOR_PIN_LIST[x].dir_r, LOW);                     \
+#define MOTOR_INVERSE_DIR(x)                                             \
+  do                                                                     \
+  {                                                                      \
+    digitalWrite(MOTOR_PIN_LIST[x].dir_l, HIGH);                         \
+    digitalWrite(MOTOR_PIN_LIST[x].dir_r, LOW);                          \
     analogWrite(MOTOR_PIN_LIST[x].enable, abs(g_MotorMobile[x].pwmOut)); \
   } while (0)
 
-#define MOTOR_FORWARD_DIR(x)                                        \
-  do                                                                \
-  {                                                                 \
-    digitalWrite(MOTOR_PIN_LIST[x].dir_l, LOW);                     \
-    digitalWrite(MOTOR_PIN_LIST[x].dir_r, HIGH);                    \
+#define MOTOR_FORWARD_DIR(x)                                             \
+  do                                                                     \
+  {                                                                      \
+    digitalWrite(MOTOR_PIN_LIST[x].dir_l, LOW);                          \
+    digitalWrite(MOTOR_PIN_LIST[x].dir_r, HIGH);                         \
     analogWrite(MOTOR_PIN_LIST[x].enable, abs(g_MotorMobile[x].pwmOut)); \
   } while (0)
 
@@ -40,7 +47,7 @@ Motor_Config_T g_MotorMobile[MOTOR_MOBILE_UNKNOW];
 Wheel_Vel_Config_T g_MotorSpeedCommand;
 Mobile_Vel_Config_T g_MobileSpeedCommand;
 Mobile_Vel_Config_T g_MobileSpeedCurent;
-Mobile_Pos_Config_T g_MobilePositionCurent;  
+Mobile_Pos_Config_T g_MobilePositionCurent;
 uint32_t preTimeCommand;
 
 /* Private variables -------------------------------------------------- */
@@ -59,9 +66,12 @@ Mobile_Pos_Config_T mobileTrajCur;
 Mobile_Pos_Config_T mobileTrajRef;
 Mobile_Vel_Config_T mobileVelCmd;
 
-PID moTrajXPID(&mobileTrajCur.x_pos, &mobileVelCmd.x_vel, &mobileTrajRef.x_pos, TRAJX_PID_KP, TRAJX_PID_KI, TRAJX_PID_KD, DIRECT);
-PID moTrajXPID(&mobileTrajCur.y_pos, &mobileVelCmd.y_vel, &mobileTrajRef.y_pos, TRAJY_PID_KP, TRAJY_PID_KI, TRAJY_PID_KD, DIRECT);
-PID moTrajXPID(&mobileTrajCur.theta, &mobileVelCmd.theta_vel, &mobileTrajRef.theta, TRAJTHE_PID_KP, TRAJTHE_PID_KI, TRAJTHE_PID_KD, DIRECT);
+PID moTrajXPID(&g_MobilePositionCurent.x_pos, &mobileVelCmd.x_vel, &mobileTrajRef.x_pos, TRAJX_PID_KP,
+               TRAJX_PID_KI, TRAJX_PID_KD, DIRECT);
+PID moTrajYPID(&g_MobilePositionCurent.y_pos, &mobileVelCmd.y_vel, &mobileTrajRef.y_pos, TRAJY_PID_KP,
+               TRAJY_PID_KI, TRAJY_PID_KD, DIRECT);
+PID moTrajTHEPID(&g_MobilePositionCurent.theta, &mobileVelCmd.theta_vel, &mobileTrajRef.theta, TRAJTHE_PID_KP,
+                 TRAJTHE_PID_KI, TRAJTHE_PID_KD, DIRECT);
 
 static Mobile_Pos_Config_T mobilePos;
 
@@ -83,6 +93,7 @@ Motor_Config_Pin_T MOTOR_PIN_LIST[MOTOR_MOBILE_UNKNOW] = {
 static void Motor_ReadEncoderCallback(void);
 static void Motor_ReadVelocityCallBack(void);
 static void Motor_SetVel(void);
+static Mobile_Vel_Config_T TransferFunctionToGlobal(Mobile_Vel_Config_T localMobile, double theta);
 
 /* Function definitions ----------------------------------------------- */
 void Mobile_PIDInit(void)
@@ -102,6 +113,21 @@ void Mobile_PIDInit(void)
   motorPID4.SetMode(AUTOMATIC);
   motorPID4.SetSampleTime(10);
   motorPID4.SetOutputLimits(-PWM_DEFAULT_VALUE, PWM_DEFAULT_VALUE);
+
+  moTrajXPID.SetMode(AUTOMATIC);
+  moTrajXPID.SetSampleTime(5);
+  moTrajXPID.SetOutputLimits(-MOBILE_MAX_LINEAR_VEL, MOBILE_MAX_LINEAR_VEL);
+  moTrajXPID.SetLowFilter(false, 0.0000135);
+
+  moTrajYPID.SetMode(AUTOMATIC);
+  moTrajYPID.SetSampleTime(5);
+  moTrajYPID.SetOutputLimits(-MOBILE_MAX_LINEAR_VEL, MOBILE_MAX_LINEAR_VEL);
+  moTrajYPID.SetLowFilter(false, 0.00000138);
+
+  moTrajTHEPID.SetMode(AUTOMATIC);
+  moTrajTHEPID.SetSampleTime(5);
+  moTrajTHEPID.SetOutputLimits(-MOBILE_MAX_ANGULAR_VEL, MOBILE_MAX_ANGULAR_VEL);
+  moTrajTHEPID.SetLowFilter(false, 0);
 }
 
 void Mobile_SetSpeed(Mobile_Vel_Config_T speedCommand)
@@ -130,14 +156,91 @@ Mobile_Vel_Config_T Mobile_ReadCurrentSpeed(void)
 
 Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void)
 {
-  static uint16_t preTime       = 0;
-  Mobile_Vel_Config_T mobileVel = Mobile_ReadCurrentSpeed();
+  static uint16_t preTime = 0;
+  g_MobileSpeedCurent     = TransferFunctionToGlobal(Mobile_ReadCurrentSpeed(), g_MobilePositionCurent.theta);
 
-  mobilePos.theta += mobileVel.theta_vel * float(millis() - preTime) / 1000.0;
-  mobilePos.x_pos += mobileVel.x_vel * (float(millis() - preTime) / 1000.0) * cos(mobileVel.theta_vel);
-  mobilePos.y_pos += mobileVel.y_vel * (float(millis() - preTime) / 1000.0) * sin(mobileVel.theta_vel);
+  g_MobilePositionCurent.x_pos += g_MobileSpeedCurent.x_vel * (float(millis() - preTime) / 1000.0);
+  g_MobilePositionCurent.y_pos += g_MobileSpeedCurent.y_vel * (float(millis() - preTime) / 1000.0);
+  g_MobilePositionCurent.theta += g_MobileSpeedCurent.theta_vel * float(millis() - preTime) / 1000.0;
 
-  return mobilePos;
+  preTime = millis();
+  return g_MobilePositionCurent;
+}
+
+void Mobile_TrackingTrajectory()
+{
+#define SAMPLE_TIME (0.01) // second
+#define TIME_SIM    (10)   // second
+
+  static MOBILE_STATE_T mobileState = MOBILE_START;
+
+  unsigned long startTime       = millis();
+  unsigned long desiredDuration = 10; // 10 seconds
+  unsigned long currentTime     = 0;
+  double tmpTime                = 0;
+
+  switch (mobileState)
+  {
+  case MOBILE_START:
+    mobileState = MOBILE_ONGOING;
+    break;
+
+  case MOBILE_ONGOING:
+    while (tmpTime < desiredDuration)
+    {
+      currentTime = millis();
+      if (currentTime - startTime >= SAMPLE_TIME)
+      {
+        startTime = currentTime;
+        tmpTime   = (double)(currentTime / 1000.0);
+
+        //  Get desired trajectoy
+        mobileTrajRef.x_pos = 0.5*cos(tmpTime);
+        mobileTrajRef.y_pos = 0.5*sin(tmpTime);
+        mobileTrajRef.theta = 0;
+
+        // Get actual trajectory
+        Mobile_ReadCurrentPosition();
+
+        // Calculate command velocity
+        moTrajXPID.Compute();
+        moTrajYPID.Compute();
+        moTrajTHEPID.Compute();
+        Mobile_SetSpeed(mobileVelCmd);
+
+        // Print out result
+        // Serial.print(String("Curent Position:  ") + g_MobilePositionCurent.x_pos + String(", "));
+        // Serial.print(g_MobilePositionCurent.y_pos + String(", "));
+        // Serial.println(g_MobilePositionCurent.theta);
+
+        // Serial.print(String("Desired Position: ") + mobileTrajRef.x_pos + String(", "));
+        // Serial.print(mobileTrajRef.y_pos + String(", "));
+        // Serial.println(mobileTrajRef.theta);
+
+        Serial.print(String("Command Velocity: ") + mobileVelCmd.x_vel + String(", "));
+        Serial.print(mobileVelCmd.y_vel + String(", "));
+        Serial.println(mobileVelCmd.theta_vel);        
+
+        // Check reach goal
+      }
+    }
+    mobileState = MOBILE_STOP;
+    break;
+
+  case MOBILE_STOP:
+    mobileVelCmd.x_vel     = 0;
+    mobileVelCmd.y_vel     = 0;
+    mobileVelCmd.theta_vel = 0;
+
+    Mobile_SetSpeed(mobileVelCmd);
+    break;
+
+  default:
+    break;
+  }
+
+#undef SAMPLE_TIME
+#undef TIME_SIM
 }
 
 /*
@@ -231,23 +334,14 @@ static void Motor_SetVel()
   }
 }
 
-void Mobile_TrackingTrajectory()
+static Mobile_Vel_Config_T TransferFunctionToGlobal(Mobile_Vel_Config_T local, double theta)
 {
-#define SAMPLE_TIME (0.01)  // second
-#define TIME_SIM    (10)    // second 
- 
-  for(float t = 0; i < TIME_SIM; t+=SAMPLE_TIME)
-  {
-    mobileTrajRef.x_pos = 1*cos(0.1*t);
-    mobileTrajRef.y_pos = 1*sin(0.1*t);
-    mobileTrajRef.theta = 0;
+  Mobile_Vel_Config_T global;
 
-    
+  global.x_vel = local.x_vel * cos(theta) - local.y_vel * sin(theta);
+  global.y_vel = local.x_vel * sin(theta) + local.y_vel * cos(theta);
 
-  }
-
-#endif SAMPLE_TIME 
-#endif TIME_SIM 
+  return global;
 }
 
 // Timer 1 Interupt
@@ -265,14 +359,13 @@ ISR(TIMER2_OVF_vect)
 }
 
 void Test_SetPin(double x)
-{ 
-  Mobile_Vel_Config_T speedCommand;
-  
-  speedCommand.x_vel = 0.5;
-  speedCommand.y_vel = 0.5;
-  speedCommand.theta_vel = 0;
+{
+  // Mobile_Vel_Config_T speedCommand;
 
-  Mobile_SetSpeed(speedCommand);
+  // speedCommand.x_vel     = 0.5;
+  // speedCommand.y_vel     = 0;
+  // speedCommand.theta_vel = 0;
+  // Mobile_SetSpeed(speedCommand);
 
   // g_MotorMobile[MOTOR_MOBILE_1].pwmOut = x;
   // g_MotorMobile[MOTOR_MOBILE_2].pwmOut = x;
@@ -290,5 +383,30 @@ void Test_SetPin(double x)
   //     MOTOR_INVERSE_DIR(index);
   //   }
   // }
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_1].velCurrent + String(", "));
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_2].velCurrent + String(", "));
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_3].velCurrent + String(", "));
+  // Serial.println(g_MotorMobile[MOTOR_MOBILE_4].velCurrent);
+
+  // Serial.print(g_MotorSpeedCommand.w1_vel + String(", "));
+  // Serial.print(g_MotorSpeedCommand.w2_vel + String(", "));
+  // Serial.print(g_MotorSpeedCommand.w3_vel + String(", "));
+  // Serial.println(g_MotorSpeedCommand.w4_vel);
+
+  // g_MobileSpeedCurent = TransferFunctionToGlobal(Mobile_ReadCurrentSpeed(), g_MobilePositionCurent.theta);
+  // Mobile_ReadCurrentPosition();
+  Mobile_TrackingTrajectory();
+
+  // Serial.print(String("Curent Position: ") + g_MobilePositionCurent.x_pos + String(", "));
+  // Serial.print(g_MobilePositionCurent.y_pos + String(", "));
+  // Serial.println(g_MobilePositionCurent.theta);
+
+  // Serial.print(String("Desired Position: ") + mobileTrajRef.x_pos + String(", "));
+  // Serial.print(mobileTrajRef.y_pos + String(", "));
+  // Serial.println(mobileTrajRef.theta);
+
+  // Serial.print(g_MobileSpeedCurent.x_vel + String(", "));
+  // Serial.print(g_MobileSpeedCurent.y_vel + String(", "));
+  // Serial.println(g_MobileSpeedCurent.theta_vel);
 }
 /* End of file -------------------------------------------------------- */

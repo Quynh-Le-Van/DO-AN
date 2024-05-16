@@ -49,6 +49,10 @@
 #define ENCODER_MAX_VALUE_PPR (998)
 #define MOTOR_VOLREF          (24)
 
+#define MOBILE_MAX_LINEAR_VEL (1.0)
+#define MOBILE_MAX_ANGULAR_VEL (0.0625)
+
+
 /* Public enumerate/structure ---------------------------------------- */
 
 //  //M_1-----M_2\\
@@ -90,7 +94,7 @@ extern Motor_Config_T g_MotorMobile[MOTOR_MOBILE_UNKNOW];
 extern Wheel_Vel_Config_T g_MotorSpeedCommand;
 extern Mobile_Vel_Config_T g_MobileSpeedCommand;
 extern Mobile_Vel_Config_T g_MobileSpeedCurent;
-extern Mobile_Pos_Config_T g_MobilePositionCurent;  
+extern Mobile_Pos_Config_T g_MobilePositionCurent;
 extern uint32_t preTimeCommand;
 extern Motor_Config_Pin_T MOTOR_PIN_LIST[MOTOR_MOBILE_UNKNOW];
 

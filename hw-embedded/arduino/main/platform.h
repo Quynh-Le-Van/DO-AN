@@ -46,17 +46,17 @@
 #define MOTOR4_PID_KD (0)
 #define MOTOR4_PID_KI (1.4412184367035)
 
-#define TRAJX_PID_KP   (1)
-#define TRAJX_PID_KI   (1)
-#define TRAJX_PID_KD   (1)
+#define TRAJX_PID_KP   (20.3130996120268)
+#define TRAJX_PID_KI   (0)
+#define TRAJX_PID_KD   (0)
 
-#define TRAJY_PID_KP   (1)
-#define TRAJY_PID_KI   (1)
-#define TRAJY_PID_KD   (1)
+#define TRAJY_PID_KP   (20.172647728744)
+#define TRAJY_PID_KI   (0)
+#define TRAJY_PID_KD   (0)
 
-#define TRAJTHE_PID_KP   (1)
-#define TRAJTHE_PID_KI   (1)
-#define TRAJTHE_PID_KD   (1)
+#define TRAJTHE_PID_KP   (20.172647728744)
+#define TRAJTHE_PID_KI   (0)
+#define TRAJTHE_PID_KD   (0)
 
 /* Public enumerate/structure ---------------------------------------- */
 /* Public macros ----------------------------------------------------- */

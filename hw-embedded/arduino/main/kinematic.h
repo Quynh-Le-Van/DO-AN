@@ -25,16 +25,16 @@
 //// Mobile Config ///////////
 typedef struct
 {
-  float x_pos;
-  float y_pos;
-  float theta;
+  double x_pos;
+  double y_pos;
+  double theta;
 } Mobile_Pos_Config_T;
 
 typedef struct
 {
-  float x_vel;
-  float y_vel;
-  float theta_vel;
+  double x_vel;
+  double y_vel;
+  double theta_vel;
 } Mobile_Vel_Config_T;
 
 typedef struct

@@ -77,19 +77,8 @@ void loop()
   // }
 
   // nodeHandle.spinOnce();
-  Test_SetPin(-100);
-
-  Serial.print(g_MotorMobile[MOTOR_MOBILE_1].velCurrent + String(", "));
-  Serial.print(g_MotorMobile[MOTOR_MOBILE_2].velCurrent + String(", "));
-  Serial.print(g_MotorMobile[MOTOR_MOBILE_3].velCurrent + String(", "));
-  Serial.println(g_MotorMobile[MOTOR_MOBILE_4].velCurrent);
-
-  // Serial.print(g_MotorSpeedCommand.w1_vel + String(", "));
-  // Serial.print(g_MotorSpeedCommand.w2_vel + String(", "));
-  // Serial.print(g_MotorSpeedCommand.w3_vel + String(", "));
-  // Serial.println(g_MotorSpeedCommand.w4_vel);
-
-  delay(1);
+  Test_SetPin(100);
+  delay(10);
 }
 
 static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)

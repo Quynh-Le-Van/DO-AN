@@ -24,6 +24,7 @@ PID::PID(double* Input, double* Output, double* Setpoint,
     myInput = Input;
     mySetpoint = Setpoint;
     inAuto = false;
+    enableLowPassFilter = false;
 
     PID::SetOutputLimits(0, 255);				//default output limit corresponds to
 												//the arduino pwm limits
@@ -80,7 +81,17 @@ bool PID::Compute()
       else output = 0;
 
       /*Compute Rest of PID Output*/
-      output += outputSum - kd * dInput;
+      if (enableLowPassFilter) 
+      {
+         // Low pass filter for D term 
+         double filteredD = prevD * (1 - dFilter) + kd * dInput * dFilter;
+         output += outputSum - filteredD;
+         prevD = filteredD;
+      }
+      else
+      {
+         output += outputSum - kd * dInput;
+      }
 
 	    if(output > outMax) output = outMax;
       else if(output < outMin) output = outMin;
@@ -210,6 +221,12 @@ void PID::SetControllerDirection(int Direction)
    }
    controllerDirection = Direction;
 }
+
+void PID::SetLowFilter(bool enable, double Filter)
+{
+   enableLowPassFilter = enable;
+   dFilter = Filter;
+}				  
 
 /* Status Funcions*************************************************************
  * Just because you set the Kp=-1 doesn't mean it actually happened.  these
