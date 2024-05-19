@@ -16,6 +16,7 @@
 //+====================================================================
 /* Includes ----------------------------------------------------------- */
 #include "mobile_pf.h"
+#include <Math.h>
 
 /* Private enumerate/structure ---------------------------------------- */
 typedef enum
@@ -115,17 +116,17 @@ void Mobile_PIDInit(void)
   motorPID4.SetOutputLimits(-PWM_DEFAULT_VALUE, PWM_DEFAULT_VALUE);
 
   moTrajXPID.SetMode(AUTOMATIC);
-  moTrajXPID.SetSampleTime(5);
+  moTrajXPID.SetSampleTime(1);
   moTrajXPID.SetOutputLimits(-MOBILE_MAX_LINEAR_VEL, MOBILE_MAX_LINEAR_VEL);
   moTrajXPID.SetLowFilter(false, 0.0000135);
 
   moTrajYPID.SetMode(AUTOMATIC);
-  moTrajYPID.SetSampleTime(5);
+  moTrajYPID.SetSampleTime(1);
   moTrajYPID.SetOutputLimits(-MOBILE_MAX_LINEAR_VEL, MOBILE_MAX_LINEAR_VEL);
   moTrajYPID.SetLowFilter(false, 0.00000138);
 
   moTrajTHEPID.SetMode(AUTOMATIC);
-  moTrajTHEPID.SetSampleTime(5);
+  moTrajTHEPID.SetSampleTime(1);
   moTrajTHEPID.SetOutputLimits(-MOBILE_MAX_ANGULAR_VEL, MOBILE_MAX_ANGULAR_VEL);
   moTrajTHEPID.SetLowFilter(false, 0);
 }
@@ -156,12 +157,26 @@ Mobile_Vel_Config_T Mobile_ReadCurrentSpeed(void)
 
 Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void)
 {
-  static uint16_t preTime = 0;
-  g_MobileSpeedCurent     = TransferFunctionToGlobal(Mobile_ReadCurrentSpeed(), g_MobilePositionCurent.theta);
+  static float preTime = 0;
+  float dx, dy, dtheta; 
 
-  g_MobilePositionCurent.x_pos += g_MobileSpeedCurent.x_vel * (float(millis() - preTime) / 1000.0);
-  g_MobilePositionCurent.y_pos += g_MobileSpeedCurent.y_vel * (float(millis() - preTime) / 1000.0);
-  g_MobilePositionCurent.theta += g_MobileSpeedCurent.theta_vel * float(millis() - preTime) / 1000.0;
+  g_MobileSpeedCurent.x_vel = round(g_MobileSpeedCurent.x_vel * 1000) / 1000;
+  g_MobileSpeedCurent.y_vel = round(g_MobileSpeedCurent.y_vel * 1000) / 1000;
+  g_MobileSpeedCurent.theta_vel = round(g_MobileSpeedCurent.theta_vel * 1000) / 1000;
+
+  dtheta = (g_MobileSpeedCurent.theta_vel * (float)(millis() - preTime) / 1000.000);
+  g_MobilePositionCurent.theta = g_MobilePositionCurent.theta + dtheta;
+  
+  g_MobileSpeedCurent = TransferFunctionToGlobal(Mobile_ReadCurrentSpeed(), g_MobilePositionCurent.theta);
+
+  dx = (g_MobileSpeedCurent.x_vel * (float)(millis() - preTime) / 1000.0);
+  dy = (g_MobileSpeedCurent.y_vel * (float)(millis() - preTime) / 1000.0);
+
+  g_MobilePositionCurent.x_pos = g_MobilePositionCurent.x_pos + dx;
+  g_MobilePositionCurent.y_pos = g_MobilePositionCurent.y_pos + dy;
+
+  // Serial.print(dx, 5);
+  // Serial.println(String(""));
 
   preTime = millis();
   return g_MobilePositionCurent;
@@ -170,12 +185,12 @@ Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void)
 void Mobile_TrackingTrajectory()
 {
 #define SAMPLE_TIME (0.01) // second
-#define TIME_SIM    (10)   // second
+#define TIME_SIM    (100)   // second
 
   static MOBILE_STATE_T mobileState = MOBILE_START;
 
   unsigned long startTime       = millis();
-  unsigned long desiredDuration = 10; // 10 seconds
+  unsigned long desiredDuration = TIME_SIM; // 10 seconds
   unsigned long currentTime     = 0;
   double tmpTime                = 0;
 
@@ -189,18 +204,15 @@ void Mobile_TrackingTrajectory()
     while (tmpTime < desiredDuration)
     {
       currentTime = millis();
-      if (currentTime - startTime >= SAMPLE_TIME)
+      if (currentTime - startTime >= 100)
       {
         startTime = currentTime;
         tmpTime   = (double)(currentTime / 1000.0);
 
         //  Get desired trajectoy
-        mobileTrajRef.x_pos = 0.5*cos(tmpTime);
-        mobileTrajRef.y_pos = 0.5*sin(tmpTime);
+        mobileTrajRef.x_pos =  (tmpTime);
+        mobileTrajRef.y_pos = 0;
         mobileTrajRef.theta = 0;
-
-        // Get actual trajectory
-        Mobile_ReadCurrentPosition();
 
         // Calculate command velocity
         moTrajXPID.Compute();
@@ -208,10 +220,23 @@ void Mobile_TrackingTrajectory()
         moTrajTHEPID.Compute();
         Mobile_SetSpeed(mobileVelCmd);
 
+        // Mobile_Vel_Config_T speedCommand;
+
+        // speedCommand.x_vel     = 0.2;
+        // speedCommand.y_vel     = 0;
+        // speedCommand.theta_vel = 0;
+        // Mobile_SetSpeed(speedCommand);
+
+        // Get actual trajectory
+        // Mobile_ReadCurrentPosition();
+
         // Print out result
-        // Serial.print(String("Curent Position:  ") + g_MobilePositionCurent.x_pos + String(", "));
-        // Serial.print(g_MobilePositionCurent.y_pos + String(", "));
-        // Serial.println(g_MobilePositionCurent.theta);
+        Serial.print(String("Curent Position:  "));
+        Serial.print(g_MobilePositionCurent.x_pos, 5);
+        Serial.print(String(", "));
+        Serial.print(g_MobilePositionCurent.y_pos, 5);
+        Serial.print(String(", "));
+        Serial.println(g_MobilePositionCurent.theta);
 
         // Serial.print(String("Desired Position: ") + mobileTrajRef.x_pos + String(", "));
         // Serial.print(mobileTrajRef.y_pos + String(", "));
@@ -219,11 +244,25 @@ void Mobile_TrackingTrajectory()
 
         Serial.print(String("Command Velocity: ") + mobileVelCmd.x_vel + String(", "));
         Serial.print(mobileVelCmd.y_vel + String(", "));
-        Serial.println(mobileVelCmd.theta_vel);        
+        Serial.println(mobileVelCmd.theta_vel);
+
+        // Serial.print(String("Actual Velocity: "));
+        // Serial.print(g_MobileSpeedCurent.x_vel, 5);
+        // Serial.print(String(", "));
+        // Serial.print(g_MobileSpeedCurent.y_vel, 5);
+        // Serial.print(String(", "));
+        // Serial.println(g_MobileSpeedCurent.theta_vel);
+
+        Serial.println(tmpTime);
 
         // Check reach goal
+        if (g_MobilePositionCurent.x_pos >= 1)
+        {
+          break;
+        }
       }
     }
+
     mobileState = MOBILE_STOP;
     break;
 
@@ -349,6 +388,7 @@ ISR(TIMER1_OVF_vect)
 {
   TCNT1 = 65400;
   Motor_ReadEncoderCallback();
+
 }
 
 // Timer 2 Interupt
@@ -356,16 +396,23 @@ ISR(TIMER2_OVF_vect)
 {
   TCNT2 = 99;
   Motor_ReadVelocityCallBack();
+  Mobile_ReadCurrentPosition();
 }
 
 void Test_SetPin(double x)
 {
+  x = 255;
   // Mobile_Vel_Config_T speedCommand;
 
   // speedCommand.x_vel     = 0.5;
   // speedCommand.y_vel     = 0;
   // speedCommand.theta_vel = 0;
   // Mobile_SetSpeed(speedCommand);
+
+  // Serial.print(g_MotorSpeedCommand.w1_vel + String(", "));
+  // Serial.print(g_MotorSpeedCommand.w2_vel + String(", "));
+  // Serial.print(g_MotorSpeedCommand.w3_vel + String(", "));
+  // Serial.println(g_MotorSpeedCommand.w4_vel);
 
   // g_MotorMobile[MOTOR_MOBILE_1].pwmOut = x;
   // g_MotorMobile[MOTOR_MOBILE_2].pwmOut = x;
@@ -388,10 +435,10 @@ void Test_SetPin(double x)
   // Serial.print(g_MotorMobile[MOTOR_MOBILE_3].velCurrent + String(", "));
   // Serial.println(g_MotorMobile[MOTOR_MOBILE_4].velCurrent);
 
-  // Serial.print(g_MotorSpeedCommand.w1_vel + String(", "));
-  // Serial.print(g_MotorSpeedCommand.w2_vel + String(", "));
-  // Serial.print(g_MotorSpeedCommand.w3_vel + String(", "));
-  // Serial.println(g_MotorSpeedCommand.w4_vel);
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_1].encoderCount + String(", "));
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_2].encoderCount + String(", "));
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_3].encoderCount + String(", "));
+  // Serial.println(g_MotorMobile[MOTOR_MOBILE_4].encoderCount);
 
   // g_MobileSpeedCurent = TransferFunctionToGlobal(Mobile_ReadCurrentSpeed(), g_MobilePositionCurent.theta);
   // Mobile_ReadCurrentPosition();

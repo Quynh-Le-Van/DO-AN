@@ -78,7 +78,7 @@ void loop()
 
   // nodeHandle.spinOnce();
   Test_SetPin(100);
-  delay(10);
+  // delay(10);
 }
 
 static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)

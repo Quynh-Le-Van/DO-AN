@@ -19,8 +19,8 @@
 #include "kinematic.h"
 
 /* Private defines ---------------------------------------------------- */
-#define MOBILE_LENGTH (0.15)
-#define MOBILE_WIDTH  (0.15)
+#define MOBILE_LENGTH (0.26)
+#define MOBILE_WIDTH  (0.105)
 #define WHEEL_RADIUS  (0.05)
 #define LINK_ARM_1    (0.05)
 #define LINK_ARM_2    (0.2)

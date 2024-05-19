@@ -49,7 +49,7 @@
 #define ENCODER_MAX_VALUE_PPR (998)
 #define MOTOR_VOLREF          (24)
 
-#define MOBILE_MAX_LINEAR_VEL (1.0)
+#define MOBILE_MAX_LINEAR_VEL (0.5)
 #define MOBILE_MAX_ANGULAR_VEL (0.0625)
 
 
