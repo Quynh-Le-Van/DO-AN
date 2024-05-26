@@ -2,9 +2,11 @@
 delete(mobilePF);
 delete(Robot_arm_1);
 delete(Robot_arm_2);
+delete(Robot_arm_3);
 delete(p1);
 delete(p2);
 delete(p3);
+delete(p4);
 delete(arrow);
 
 %% Khai báo 
@@ -17,6 +19,7 @@ height = 0;  % Chiều cao
 l1 = 0; % Chiều dài khớp 1
 l2 = 0.25; % Chiều dài khớp 2
 l3 = 0.25; % Chiều dài khớp 3
+l4 = 0.1; % chiều dài khớp 4
 
 % Góc của các khớp
 % theta1 = 0; % Góc khớp 1
@@ -67,6 +70,10 @@ x3 = x0 + l2*cos(theta2) * cos(theta + theta1) + l3 * cos(theta2 + theta3) * cos
 y3 = y0 + l2*cos(theta2) * sin(theta + theta1) + l3*cos(theta2 + theta3) * sin(theta + theta1);
 z3 = z0 + l1 + l2 * sin(theta2) + l3*sin(theta2 + theta3);  
 
+x4 = x3 + l4 * cos(theta + theta1) * cos(0);
+y4 = y3 + l4 * sin(theta + theta1) * cos(0);
+z4 = z3 + l4 * sin(0);
+
 % % Vẽ đường nối giữa các điểm
 % plot3([x0, x2, x3], [y0, y2, y3], [z0, z2, z3], 'r-o', 'LineWidth', 2);
 
@@ -74,6 +81,7 @@ z3 = z0 + l1 + l2 * sin(theta2) + l3*sin(theta2 + theta3);
 p1 = plot3(x1, y1, z1, 'bo', 'MarkerSize', 5, 'MarkerFaceColor', 'red');
 p2 = plot3(x2, y2, z2, 'bo', 'MarkerSize', 5, 'MarkerFaceColor', 'red');
 p3 = plot3(x3, y3, z3, 'bo', 'MarkerSize', 5, 'MarkerFaceColor', 'red');
+p4 = plot3(x4, y4, z4, 'bo', 'MarkerSize', 5, 'MarkerFaceColor', 'red');
 
 % Vẽ khớp 2
 Robot_arm_1 = patch([x1, x2], [y1, y2], [z1, z2], 'g', 'LineWidth', 2);
@@ -81,8 +89,11 @@ Robot_arm_1 = patch([x1, x2], [y1, y2], [z1, z2], 'g', 'LineWidth', 2);
 % Vẽ khớp 3
 Robot_arm_2 = patch([x2, x3], [y2, y3], [z2, z3], 'b', 'LineWidth', 2);
 
+% Vẽ khớp 4
+Robot_arm_3 = patch([x3, x4], [y3, y4], [z3, z4], 'b', 'LineWidth', 2);
+
 % Vẽ quỹ đạo thực tế của end-effects 
-pl = plot3(x3, y3, z3, 'k.');
+pl = plot3(x4, y4, z4, 'k.');
 pl.LineWidth = 2;
 
 %% Config đồ thị

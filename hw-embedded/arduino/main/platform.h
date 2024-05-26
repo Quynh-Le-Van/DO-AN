@@ -46,15 +46,15 @@
 #define MOTOR4_PID_KD (0)
 #define MOTOR4_PID_KI (11.5416038374106)
 
-#define TRAJX_PID_KP   (48.1728067691555)
+#define TRAJX_PID_KP   (6)
 #define TRAJX_PID_KI   (0)
 #define TRAJX_PID_KD   (0)
 
-#define TRAJY_PID_KP   (48.1728067691555)
+#define TRAJY_PID_KP   (6)
 #define TRAJY_PID_KI   (0)
 #define TRAJY_PID_KD   (0)
 
-#define TRAJTHE_PID_KP   (48.1728067691555)
+#define TRAJTHE_PID_KP   (6)
 #define TRAJTHE_PID_KI   (0)
 #define TRAJTHE_PID_KD   (0)
 

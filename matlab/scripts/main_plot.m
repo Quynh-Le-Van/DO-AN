@@ -2,7 +2,7 @@
 plot_Init
 
 %% Simulate Loop
-for t = 1 : 1 : size(TrajectoryRef_data.ans, 2)
+for t = 1 : 10 : size(TrajectoryRef_data.ans, 2)
 
   x = MobilePosAc_data.ans(2, t);
   y = MobilePosAc_data.ans(3, t);
@@ -13,11 +13,12 @@ for t = 1 : 1 : size(TrajectoryRef_data.ans, 2)
   theta2 = ArmAngle_data.ans(3, t);
   theta3 = ArmAngle_data.ans(4, t);
 
-  hx(1:t) = TrajectoryAc_data.ans(2, t);
-  hy(1:t) = TrajectoryAc_data.ans(3, t);
-  hz(1:t) = TrajectoryAc_data.ans(4, t);
+  hx = TrajectoryAc_data.ans(2, t);
+  hy = TrajectoryAc_data.ans(3, t);
+  hz = TrajectoryAc_data.ans(4, t);
 
   plot_MobileManipulator
+
   pause(0.001);
   hold on
 

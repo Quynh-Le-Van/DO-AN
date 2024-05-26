@@ -10,12 +10,14 @@ f.WindowState = 'maximized';
 
 %% Init condition
 mobilePF = patch(0, 0, 0, 'b');
-Robot_arm_2 = patch([0, 0], [0, 0], [0, 0], 'LineWidth',0.1);
 Robot_arm_1=patch([0, 0], [0, 0], [0, 0], 'LineWidth',0.1);
+Robot_arm_2 = patch([0, 0], [0, 0], [0, 0], 'LineWidth',0.1);
+Robot_arm_3 = patch([0, 0], [0, 0], [0, 0], 'LineWidth',0.1);
 arrow = quiver3(0, 0, 0, 0, 0, 0, 'b', 'LineWidth', 2);
 p1 = plot3(0, 0, 0, 'bo', 'MarkerSize', 0.01);
 p2 = plot3(0, 0, 0, 'bo', 'MarkerSize', 0.01);
 p3 = plot3(0, 0, 0, 'bo', 'MarkerSize', 0.01);
+p4 = plot3(0, 0, 0, 'bo', 'MarkerSize', 0.01);
 hold on
 
 hx(1) = 0;

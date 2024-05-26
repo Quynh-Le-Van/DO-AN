@@ -75,6 +75,7 @@ PID moTrajTHEPID(&g_MobilePositionCurent.theta, &mobileVelCmd.theta_vel, &mobile
                  TRAJTHE_PID_KI, TRAJTHE_PID_KD, DIRECT);
 
 static Mobile_Pos_Config_T mobilePos;
+static double timerInterval = 0;
 
 #define INFO(_ea, _eb, _pwm, _dirl, _dirr)                                             \
   {                                                                                    \
@@ -118,7 +119,7 @@ void Mobile_PIDInit(void)
   moTrajXPID.SetMode(AUTOMATIC);
   moTrajXPID.SetSampleTime(1);
   moTrajXPID.SetOutputLimits(-MOBILE_MAX_LINEAR_VEL, MOBILE_MAX_LINEAR_VEL);
-  moTrajXPID.SetLowFilter(false, 0.0000135);
+  moTrajXPID.SetLowFilter(false, 7558.11666728512);
 
   moTrajYPID.SetMode(AUTOMATIC);
   moTrajYPID.SetSampleTime(1);
@@ -189,10 +190,11 @@ void Mobile_TrackingTrajectory()
 
   static MOBILE_STATE_T mobileState = MOBILE_START;
 
-  unsigned long startTime       = millis();
+  unsigned long startTime       = 0;
   unsigned long desiredDuration = TIME_SIM; // 10 seconds
   unsigned long currentTime     = 0;
   double tmpTime                = 0;
+  double timeInterval = 0;
 
   switch (mobileState)
   {
@@ -204,14 +206,17 @@ void Mobile_TrackingTrajectory()
     while (tmpTime < desiredDuration)
     {
       currentTime = millis();
-      if (currentTime - startTime >= 100)
+
+      Serial.println(String("Time Interval: ") + timeInterval);
+      if (millis() - startTime >= 10)
       {
         startTime = currentTime;
-        tmpTime   = (double)(currentTime / 1000.0);
+        tmpTime   = (double)(millis() / 1000.0);
+        timeInterval += 0.1;
 
         //  Get desired trajectoy
-        mobileTrajRef.x_pos =  (tmpTime);
-        mobileTrajRef.y_pos = 0;
+        mobileTrajRef.x_pos = 0.5 * sin(timeInterval);
+        mobileTrajRef.y_pos = 0.5 * cos(timeInterval);
         mobileTrajRef.theta = 0;
 
         // Calculate command velocity
@@ -227,24 +232,28 @@ void Mobile_TrackingTrajectory()
         // speedCommand.theta_vel = 0;
         // Mobile_SetSpeed(speedCommand);
 
-        // Get actual trajectory
-        // Mobile_ReadCurrentPosition();
+        Serial.println(String("Desired: ") + mobileTrajRef.x_pos + String(", ") + mobileTrajRef.y_pos + String(", "));
+        Serial.println(String("Actual: ") + g_MobilePositionCurent.x_pos + String(", ") + g_MobilePositionCurent.y_pos + String(", "));
+        Serial.println(String("Desired vel: ") + mobileVelCmd.x_vel + String(", ") + mobileVelCmd.y_vel + String(", "));
 
         // Print out result
-        Serial.print(String("Curent Position:  "));
-        Serial.print(g_MobilePositionCurent.x_pos, 5);
-        Serial.print(String(", "));
-        Serial.print(g_MobilePositionCurent.y_pos, 5);
-        Serial.print(String(", "));
-        Serial.println(g_MobilePositionCurent.theta);
+        // Serial.print(String("Curent Position:  "));
+        // Serial.print(g_MobilePositionCurent.x_pos, 5);
+        // Serial.print(String(", "));
+        // Serial.print(g_MobilePositionCurent.y_pos, 5);
+        // Serial.print(String(", "));
+        // Serial.println(g_MobilePositionCurent.theta);
 
-        // Serial.print(String("Desired Position: ") + mobileTrajRef.x_pos + String(", "));
-        // Serial.print(mobileTrajRef.y_pos + String(", "));
+        // Serial.print(String("Disired Position:  "));
+        // Serial.print(mobileTrajRef.x_pos, 5);
+        // Serial.print(String(", "));
+        // Serial.print(mobileTrajRef.y_pos, 5);
+        // Serial.print(String(", "));
         // Serial.println(mobileTrajRef.theta);
 
-        Serial.print(String("Command Velocity: ") + mobileVelCmd.x_vel + String(", "));
-        Serial.print(mobileVelCmd.y_vel + String(", "));
-        Serial.println(mobileVelCmd.theta_vel);
+        // Serial.print(String("Command Velocity: ") + mobileVelCmd.x_vel + String(", "));
+        // Serial.print(mobileVelCmd.y_vel + String(", "));
+        // Serial.println(mobileVelCmd.theta_vel);
 
         // Serial.print(String("Actual Velocity: "));
         // Serial.print(g_MobileSpeedCurent.x_vel, 5);
@@ -253,11 +262,16 @@ void Mobile_TrackingTrajectory()
         // Serial.print(String(", "));
         // Serial.println(g_MobileSpeedCurent.theta_vel);
 
-        Serial.println(tmpTime);
-
+        // Serial.println(tmpTime);
+        delay(100);
         // Check reach goal
         if (g_MobilePositionCurent.x_pos >= 1)
         {
+          mobileVelCmd.x_vel     = 0;
+          mobileVelCmd.y_vel     = 0;
+          mobileVelCmd.theta_vel = 0;
+
+          Mobile_SetSpeed(mobileVelCmd);
           break;
         }
       }
@@ -267,11 +281,7 @@ void Mobile_TrackingTrajectory()
     break;
 
   case MOBILE_STOP:
-    mobileVelCmd.x_vel     = 0;
-    mobileVelCmd.y_vel     = 0;
-    mobileVelCmd.theta_vel = 0;
 
-    Mobile_SetSpeed(mobileVelCmd);
     break;
 
   default:
@@ -395,6 +405,7 @@ ISR(TIMER1_OVF_vect)
 ISR(TIMER2_OVF_vect)
 {
   TCNT2 = 99;
+  timerInterval += 0.01;
   Motor_ReadVelocityCallBack();
   Mobile_ReadCurrentPosition();
 }
