@@ -20,6 +20,9 @@
 #include "kinematic.h"
 #include "platform.h"
 #include <PID_v1.h>
+#include "I2Cdev.h"
+#include "MPU6050_6Axis_MotionApps20.h"
+#include "Wire.h"
 
 /* Public defines ---------------------------------------------------- */
 #define MOTOR_EN_1        (3)
@@ -50,7 +53,7 @@
 #define MOTOR_VOLREF          (24)
 
 #define MOBILE_MAX_LINEAR_VEL (0.5)
-#define MOBILE_MAX_ANGULAR_VEL (0.0625)
+#define MOBILE_MAX_ANGULAR_VEL (1)
 
 
 /* Public enumerate/structure ---------------------------------------- */
@@ -95,7 +98,6 @@ extern Wheel_Vel_Config_T g_MotorSpeedCommand;
 extern Mobile_Vel_Config_T g_MobileSpeedCommand;
 extern Mobile_Vel_Config_T g_MobileSpeedCurent;
 extern Mobile_Pos_Config_T g_MobilePositionCurent;
-extern uint32_t preTimeCommand;
 extern Motor_Config_Pin_T MOTOR_PIN_LIST[MOTOR_MOBILE_UNKNOW];
 
 /* Public function prototypes ---------------------------------------- */
@@ -105,6 +107,7 @@ Mobile_Vel_Config_T Mobile_ReadCurrentSpeed(void);
 Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void);
 void Test_SetPin(double vel);
 void Mobile_TrackingTrajectory();
+void MPU_Init(void);
 
 /* End of file -------------------------------------------------------- */
 #endif //

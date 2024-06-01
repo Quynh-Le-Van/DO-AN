@@ -17,6 +17,7 @@
 /* Includes ----------------------------------------------------------- */
 #include "mobile_pf.h"
 #include <Math.h>
+// #include "ServoEasing.hpp"
 
 /* Private enumerate/structure ---------------------------------------- */
 typedef enum
@@ -49,7 +50,7 @@ Wheel_Vel_Config_T g_MotorSpeedCommand;
 Mobile_Vel_Config_T g_MobileSpeedCommand;
 Mobile_Vel_Config_T g_MobileSpeedCurent;
 Mobile_Pos_Config_T g_MobilePositionCurent;
-uint32_t preTimeCommand;
+MPU6050 mpu;
 
 /* Private variables -------------------------------------------------- */
 // PID MOTOR
@@ -66,16 +67,33 @@ PID motorPID4(&g_MotorMobile[MOTOR_MOBILE_4].velCurrent, &g_MotorMobile[MOTOR_MO
 Mobile_Pos_Config_T mobileTrajCur;
 Mobile_Pos_Config_T mobileTrajRef;
 Mobile_Vel_Config_T mobileVelCmd;
+static double yawValue, preYawValue;
 
 PID moTrajXPID(&g_MobilePositionCurent.x_pos, &mobileVelCmd.x_vel, &mobileTrajRef.x_pos, TRAJX_PID_KP,
                TRAJX_PID_KI, TRAJX_PID_KD, DIRECT);
 PID moTrajYPID(&g_MobilePositionCurent.y_pos, &mobileVelCmd.y_vel, &mobileTrajRef.y_pos, TRAJY_PID_KP,
                TRAJY_PID_KI, TRAJY_PID_KD, DIRECT);
-PID moTrajTHEPID(&g_MobilePositionCurent.theta, &mobileVelCmd.theta_vel, &mobileTrajRef.theta, TRAJTHE_PID_KP,
-                 TRAJTHE_PID_KI, TRAJTHE_PID_KD, DIRECT);
+PID moTrajTHEPID(&yawValue, &mobileVelCmd.theta_vel, &mobileTrajRef.theta, TRAJTHE_PID_KP, TRAJTHE_PID_KI,
+                 TRAJTHE_PID_KD, DIRECT);
 
 static Mobile_Pos_Config_T mobilePos;
 static double timerInterval = 0;
+
+// MPU control/status vars
+bool dmpReady = false;  // set true if DMP init was successful
+uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
+uint8_t devStatus;      // return status after each device operation (0 = success, !0 = error)
+uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
+uint8_t fifoBuffer[64]; // FIFO storage buffer
+
+// orientation/motion vars
+Quaternion q;        // [w, x, y, z]         quaternion container
+VectorFloat gravity; // [x, y, z]            gravity vector
+float euler[3];      // [psi, theta, phi]    Euler angle container
+float ypr[3];        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
+
+// ServoEasing Servo1;
+// ServoEasing Servo2;
 
 #define INFO(_ea, _eb, _pwm, _dirl, _dirr)                                             \
   {                                                                                    \
@@ -96,6 +114,7 @@ static void Motor_ReadEncoderCallback(void);
 static void Motor_ReadVelocityCallBack(void);
 static void Motor_SetVel(void);
 static Mobile_Vel_Config_T TransferFunctionToGlobal(Mobile_Vel_Config_T localMobile, double theta);
+static void MPU_Getangle(void);
 
 /* Function definitions ----------------------------------------------- */
 void Mobile_PIDInit(void)
@@ -130,6 +149,43 @@ void Mobile_PIDInit(void)
   moTrajTHEPID.SetSampleTime(1);
   moTrajTHEPID.SetOutputLimits(-MOBILE_MAX_ANGULAR_VEL, MOBILE_MAX_ANGULAR_VEL);
   moTrajTHEPID.SetLowFilter(false, 0);
+
+  MPU_Init();
+
+  // Servo1.attach(9, 45);
+  // Servo2.attach(10, 45);
+}
+
+void MPU_Init(void)
+{
+  Wire.begin();
+  Wire.setClock(400000); // 400kHz I2C clock. Comment this line if having compilation difficulties
+
+  // Serial.begin(115200);
+  mpu.initialize();
+  devStatus = mpu.dmpInitialize();
+
+  // supply your own gyro offsets here, scaled for min sensitivity
+  mpu.setXGyroOffset(220);
+  mpu.setYGyroOffset(76);
+  mpu.setZGyroOffset(-85);
+  mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
+
+  // make sure it worked (returns 0 if so)
+  if (devStatus == 0)
+  {
+    // Calibration Time: generate offsets and calibrate our MPU6050
+    mpu.CalibrateAccel(6);
+    mpu.CalibrateGyro(6);
+    mpu.PrintActiveOffsets();
+    mpu.setDMPEnabled(true);
+
+    mpuIntStatus = mpu.getIntStatus();
+    dmpReady     = true;
+
+    // get expected DMP packet size for later comparison
+    packetSize = mpu.dmpGetFIFOPacketSize();
+  }
 }
 
 void Mobile_SetSpeed(Mobile_Vel_Config_T speedCommand)
@@ -159,15 +215,15 @@ Mobile_Vel_Config_T Mobile_ReadCurrentSpeed(void)
 Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void)
 {
   static float preTime = 0;
-  float dx, dy, dtheta; 
+  float dx, dy, dtheta;
 
-  g_MobileSpeedCurent.x_vel = round(g_MobileSpeedCurent.x_vel * 1000) / 1000;
-  g_MobileSpeedCurent.y_vel = round(g_MobileSpeedCurent.y_vel * 1000) / 1000;
+  g_MobileSpeedCurent.x_vel     = round(g_MobileSpeedCurent.x_vel * 1000) / 1000;
+  g_MobileSpeedCurent.y_vel     = round(g_MobileSpeedCurent.y_vel * 1000) / 1000;
   g_MobileSpeedCurent.theta_vel = round(g_MobileSpeedCurent.theta_vel * 1000) / 1000;
 
-  dtheta = (g_MobileSpeedCurent.theta_vel * (float)(millis() - preTime) / 1000.000);
+  dtheta                       = (g_MobileSpeedCurent.theta_vel * (float)(millis() - preTime) / 1000.000);
   g_MobilePositionCurent.theta = g_MobilePositionCurent.theta + dtheta;
-  
+
   g_MobileSpeedCurent = TransferFunctionToGlobal(Mobile_ReadCurrentSpeed(), g_MobilePositionCurent.theta);
 
   dx = (g_MobileSpeedCurent.x_vel * (float)(millis() - preTime) / 1000.0);
@@ -186,7 +242,7 @@ Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void)
 void Mobile_TrackingTrajectory()
 {
 #define SAMPLE_TIME (0.01) // second
-#define TIME_SIM    (100)   // second
+#define TIME_SIM    (100)  // second
 
   static MOBILE_STATE_T mobileState = MOBILE_START;
 
@@ -194,7 +250,7 @@ void Mobile_TrackingTrajectory()
   unsigned long desiredDuration = TIME_SIM; // 10 seconds
   unsigned long currentTime     = 0;
   double tmpTime                = 0;
-  double timeInterval = 0;
+  double timeInterval           = 0;
 
   switch (mobileState)
   {
@@ -203,84 +259,59 @@ void Mobile_TrackingTrajectory()
     break;
 
   case MOBILE_ONGOING:
-    while (tmpTime < desiredDuration)
-    {
-      currentTime = millis();
+    // while (tmpTime < desiredDuration)
+    // {
+    //   MPU_Getangle();
+    //   currentTime = millis();
 
-      Serial.println(String("Time Interval: ") + timeInterval);
-      if (millis() - startTime >= 10)
-      {
-        startTime = currentTime;
-        tmpTime   = (double)(millis() / 1000.0);
-        timeInterval += 0.1;
+    //   if (millis() - startTime >= 10)
+    //   {
+    //     startTime = currentTime;
+    //     tmpTime   = (double)(millis() / 1000.0);
+    //     timeInterval += 0.1;
 
-        //  Get desired trajectoy
-        mobileTrajRef.x_pos = 0.5 * sin(timeInterval);
-        mobileTrajRef.y_pos = 0.5 * cos(timeInterval);
-        mobileTrajRef.theta = 0;
+    //     //  Get desired trajectoy
+    //     mobileTrajRef.x_pos = 0;
+    //     mobileTrajRef.y_pos = 0;
+    //     mobileTrajRef.theta = 0;
 
-        // Calculate command velocity
-        moTrajXPID.Compute();
-        moTrajYPID.Compute();
-        moTrajTHEPID.Compute();
-        Mobile_SetSpeed(mobileVelCmd);
+    //     // Calculate command velocity
+    //     moTrajXPID.Compute();
+    //     moTrajYPID.Compute();
+    //     moTrajTHEPID.Compute();
+    //     Mobile_SetSpeed(mobileVelCmd);
 
-        // Mobile_Vel_Config_T speedCommand;
+    //     // Serial.println(tmpTime);
+    //     // delay(100);
+    //     // Check reach goal
+    //     if (g_MobilePositionCurent.x_pos >= 1)
+    //     {
+    //       mobileVelCmd.x_vel     = 0;
+    //       mobileVelCmd.y_vel     = 0;
+    //       mobileVelCmd.theta_vel = 0;
 
-        // speedCommand.x_vel     = 0.2;
-        // speedCommand.y_vel     = 0;
-        // speedCommand.theta_vel = 0;
-        // Mobile_SetSpeed(speedCommand);
-
-        Serial.println(String("Desired: ") + mobileTrajRef.x_pos + String(", ") + mobileTrajRef.y_pos + String(", "));
-        Serial.println(String("Actual: ") + g_MobilePositionCurent.x_pos + String(", ") + g_MobilePositionCurent.y_pos + String(", "));
-        Serial.println(String("Desired vel: ") + mobileVelCmd.x_vel + String(", ") + mobileVelCmd.y_vel + String(", "));
-
-        // Print out result
-        // Serial.print(String("Curent Position:  "));
-        // Serial.print(g_MobilePositionCurent.x_pos, 5);
-        // Serial.print(String(", "));
-        // Serial.print(g_MobilePositionCurent.y_pos, 5);
-        // Serial.print(String(", "));
-        // Serial.println(g_MobilePositionCurent.theta);
-
-        // Serial.print(String("Disired Position:  "));
-        // Serial.print(mobileTrajRef.x_pos, 5);
-        // Serial.print(String(", "));
-        // Serial.print(mobileTrajRef.y_pos, 5);
-        // Serial.print(String(", "));
-        // Serial.println(mobileTrajRef.theta);
-
-        // Serial.print(String("Command Velocity: ") + mobileVelCmd.x_vel + String(", "));
-        // Serial.print(mobileVelCmd.y_vel + String(", "));
-        // Serial.println(mobileVelCmd.theta_vel);
-
-        // Serial.print(String("Actual Velocity: "));
-        // Serial.print(g_MobileSpeedCurent.x_vel, 5);
-        // Serial.print(String(", "));
-        // Serial.print(g_MobileSpeedCurent.y_vel, 5);
-        // Serial.print(String(", "));
-        // Serial.println(g_MobileSpeedCurent.theta_vel);
-
-        // Serial.println(tmpTime);
-        delay(100);
-        // Check reach goal
-        if (g_MobilePositionCurent.x_pos >= 1)
-        {
-          mobileVelCmd.x_vel     = 0;
-          mobileVelCmd.y_vel     = 0;
-          mobileVelCmd.theta_vel = 0;
-
-          Mobile_SetSpeed(mobileVelCmd);
-          break;
-        }
-      }
-    }
+    //       Mobile_SetSpeed(mobileVelCmd);
+    //       break;
+    //     }
+    //   }
+    // }
 
     mobileState = MOBILE_STOP;
     break;
 
   case MOBILE_STOP:
+    while(1)
+    {
+      // Servo1.setEasingType(EASE_CUBIC_IN_OUT); // EASE_LINEAR is default
+      // Servo2.setEasingType(EASE_CUBIC_IN_OUT); // EASE_LINEAR is default
+      // Servo1.setEaseTo(0, 40);  // Non blocking call
+      // Servo2.startEaseTo(90, 40, START_UPDATE_BY_INTERRUPT);  // Non blocking call
+      
+      // delay(5000);
+
+      // Servo1.startEaseTo(180, 40);  // Non blocking call
+      // Servo2.startEaseTo(0, 40, START_UPDATE_BY_INTERRUPT);  // Non blocking call
+    }
 
     break;
 
@@ -393,12 +424,28 @@ static Mobile_Vel_Config_T TransferFunctionToGlobal(Mobile_Vel_Config_T local, d
   return global;
 }
 
+static void MPU_Getangle(void)
+{
+  if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer))
+  {
+
+    // display Euler angles in degrees
+    mpu.dmpGetQuaternion(&q, fifoBuffer);
+    mpu.dmpGetGravity(&gravity, &q);
+    mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+    
+    yawValue = ypr[0] * 180 / M_PI;
+    yawValue = round(yawValue * 2) / 2.0;
+    yawValue = (yawValue >= preYawValue + 0.5 || yawValue <= preYawValue - 0.5) ? yawValue : preYawValue;
+    Serial.println(yawValue);
+  }
+}
+
 // Timer 1 Interupt
 ISR(TIMER1_OVF_vect)
 {
   TCNT1 = 65400;
   Motor_ReadEncoderCallback();
-
 }
 
 // Timer 2 Interupt
@@ -454,6 +501,7 @@ void Test_SetPin(double x)
   // g_MobileSpeedCurent = TransferFunctionToGlobal(Mobile_ReadCurrentSpeed(), g_MobilePositionCurent.theta);
   // Mobile_ReadCurrentPosition();
   Mobile_TrackingTrajectory();
+  // MPU_Getangle();
 
   // Serial.print(String("Curent Position: ") + g_MobilePositionCurent.x_pos + String(", "));
   // Serial.print(g_MobilePositionCurent.y_pos + String(", "));

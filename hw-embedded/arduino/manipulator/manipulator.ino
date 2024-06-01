@@ -23,7 +23,8 @@
 /* Function definitions ----------------------------------------------- */
 void setup()
 {
-  HW_PF_Init();
+  Serial.begin(115200);
+  Mani_Init();
 }
 
 void loop()
@@ -31,13 +32,20 @@ void loop()
   if (Serial.available())
   {
     String data = Serial.readStringUntil('\n');
-    if (Mani_ReceiveData(data))
-    {
+    // String data = "pos:0.55,0,0.05";
+    Serial.println(data);
 
+    if (Mani_ReceiveData(data) == MANI_DATA_POS)
+    {
+      Mani_SetPosition(g_ManipulatorPos);
     }
-    else
+    else if (Mani_ReceiveData(data) == MANI_DATA_VEL)
     {
-
+      Mani_SetSpeedJoint(g_JointSpeedCommand);
+    }
+    else 
+    {
+      // Do notthing
     }
   }
 } 

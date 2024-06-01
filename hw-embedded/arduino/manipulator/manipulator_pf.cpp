@@ -20,98 +20,133 @@
 
 /* Private enumerate/structure ---------------------------------------- */
 /* Private macros ----------------------------------------------------- */
-/* Private function prototypes ---------------------------------------- */
-bool Data_Check(String str);
+#define MAX_DEGREE        (180)
+#define MIN_DEGREE        (0)
+#define OFFSET_DEGREE_0   (-150)
+#define OFFSET_DEGREE_180 (60)
 
+/* Private function prototypes ---------------------------------------- */
 /* Public variables --------------------------------------------------- */
-ServoEasing  g_BaseServo, g_ShoulderServo, g_EllowServo, g_ArmServo, g_GripperServo;
 Manipulator_Angle_Vel_T g_JointSpeedCommand;
 Manipulator_Angle_Config_T g_JointAngleCommand;
 Manipulator_Pos_Config_T g_ManipulatorPos;
 
 /* Private variables -------------------------------------------------- */
+ServoEasing g_BaseServo, g_ShoulderServo, g_EllowServo, g_ArmServo, g_GripperServo;
+
 /* Function definitions ----------------------------------------------- */
 void Mani_Init(void)
 {
-  g_BaseServo.attach(SERVO_BASE, SERVO_INIT_ANGLE);
-  g_ShoulderServo.attach(SERVO_SHOULDER, SERVO_INIT_ANGLE);
-  g_EllowServo.attach(SERVO_ELLOW, SERVO_INIT_ANGLE);
-  g_ArmServo.attach(SERVO_ARM, SERVO_INIT_ANGLE);
-  g_GripperServo.attach(SERVO_GRIPPER, SERVO_INIT_ANGLE);
+  g_BaseServo.attach(SERVO_BASE, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
+                     DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE - 90, MAX_DEGREE - 90);
+  g_ShoulderServo.attach(SERVO_SHOULDER, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
+                         DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180 + 5, MIN_DEGREE, MAX_DEGREE);
+  g_EllowServo.attach(SERVO_ELLOW, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
+                      DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE, MAX_DEGREE);
+  g_ArmServo.attach(SERVO_ARM, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
+                    DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE, MAX_DEGREE);
+  g_GripperServo.attach(SERVO_GRIPPER, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
+                        DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE, MAX_DEGREE);
 
   g_BaseServo.setSpeed(SERVO_SPEED_DEFAULT);
   g_ShoulderServo.setSpeed(SERVO_SPEED_DEFAULT);
   g_EllowServo.setSpeed(SERVO_SPEED_DEFAULT);
   g_ArmServo.setSpeed(SERVO_SPEED_DEFAULT);
   g_GripperServo.setSpeed(SERVO_SPEED_DEFAULT);
-
 }
 
 void Mani_SetSpeedJoint(Manipulator_Angle_Vel_T vel)
 {
-  vel.joint1_vel = RAD_TO_DEG*(vel.joint1_vel);
-  vel.joint2_vel = RAD_TO_DEG*(vel.joint2_vel);
-  vel.joint3_vel = RAD_TO_DEG*(vel.joint3_vel);
-  vel.joint4_vel = RAD_TO_DEG*(vel.joint4_vel);
+  vel.joint1_vel = RAD_TO_DEG * (vel.joint1_vel);
+  vel.joint2_vel = RAD_TO_DEG * (vel.joint2_vel);
+  vel.joint3_vel = RAD_TO_DEG * (vel.joint3_vel);
+  vel.joint4_vel = RAD_TO_DEG * (vel.joint4_vel);
 
-  g_BaseServo.setSpeed(SERVO_SPEED_DEFAULT);
-  g_ShoulderServo.setSpeed(SERVO_SPEED_DEFAULT);
-  g_EllowServo.setSpeed(SERVO_SPEED_DEFAULT);
-  g_ArmServo.setSpeed(SERVO_SPEED_DEFAULT);
-  g_GripperServo.setSpeed(SERVO_SPEED_DEFAULT);
+  g_BaseServo.setSpeed(vel.joint1_vel);
+  g_ShoulderServo.setSpeed(vel.joint2_vel);
+  g_EllowServo.setSpeed(vel.joint3_vel);
+  g_ArmServo.setSpeed(vel.joint4_vel);
 }
 
-void Mani_SetPosition(Manipulator_Pos_Config_T pos, Manipulator_Angle_Vel_T vel)
+void Mani_SetPosition(Manipulator_Pos_Config_T pos)
 {
   Manipulator_Angle_Config_T angle = InverseKinematicManipulator(pos);
 
-  angle.joint_1 = RAD_TO_DEG*(angle.joint_1);
-  angle.joint_2 = RAD_TO_DEG*(angle.joint_2);
-  angle.joint_3 = RAD_TO_DEG*(angle.joint_3);
-  angle.joint_4 = RAD_TO_DEG*(angle.joint_4);                                                                                                                                                                                                                                                                                                                                                                                                       
+  angle.joint_1 = RAD_TO_DEG * (angle.joint_1);
+  angle.joint_2 = RAD_TO_DEG * (angle.joint_2);
+  angle.joint_3 = RAD_TO_DEG * (angle.joint_3);
+  angle.joint_4 = RAD_TO_DEG * (angle.joint_4);
 
-  g_BaseServo.setEaseTo(angle.joint_1, vel.joint1_vel);
-  g_ShoulderServo.setEaseTo(angle.joint_2, vel.joint2_vel);
-  g_EllowServo.setEaseTo(angle.joint_3, vel.joint3_vel);
-  g_GripperServo.startEaseTo(angle.joint_4, vel.joint4_vel, START_UPDATE_BY_INTERRUPT);
+  g_BaseServo.setEasingType(EASE_CUBIC_IN_OUT);
+  g_ShoulderServo.setEasingType(EASE_CUBIC_IN_OUT);
+  g_EllowServo.setEasingType(EASE_CUBIC_IN_OUT);
+  g_ArmServo.setEasingType(EASE_CUBIC_IN_OUT);
+
+  g_BaseServo.startEaseTo(abs(angle.joint_1));
+  g_ShoulderServo.startEaseTo(abs(angle.joint_2));
+  g_EllowServo.startEaseTo(abs(angle.joint_3));
+  g_ArmServo.startEaseTo(abs(angle.joint_4));
+
+  Serial.print(String("Ac: ") + angle.joint_1 + String(", ") + angle.joint_2 + String(", ") + angle.joint_3 +
+               String(", ") + angle.joint_4 + String("\n"));
+  Serial.print(String("Command: ") + pos.x_pos + String(", ") + pos.y_pos + String(", ") + pos.z_pos +
+               String("\n"));
+  // test:
+}
+
+void Mani_Gripper(bool isGrip)
+{
+  g_GripperServo.setEasingType(EASE_CUBIC_IN_OUT);
+
+  if (isGrip)
+  {
+    g_GripperServo.startEaseTo(MAX_DEGREE);
+  }
+  else
+  {
+    g_GripperServo.startEaseTo(MIN_DEGREE);
+  }
 }
 
 // data format: "pos:x,y,z vel:theta1_v,theta2_v,theta3_v,theta4_v"
-bool Mani_ReceiveData(String data) 
+MANI_DATA_TYPE_T Mani_ReceiveData(String data)
 {
-  if (data.startsWith("pos:") && data.indexOf("vel:") != -1) {
-    int posColonPos = data.indexOf(':');
-    int posCommaPos = data.indexOf(',', posColonPos);
+  if (data.startsWith("pos:"))
+  {
+    data            = data.substring(4);
+    int firstComma  = data.indexOf(',');
+    int secondComma = data.indexOf(',', firstComma + 1);
+    int thirdComma  = data.indexOf(',', secondComma + 1);
 
-    if (posColonPos != -1 && posCommaPos != -1) {
-      g_ManipulatorPos.x_pos = (data.substring(posColonPos + 1, posCommaPos)).toDouble();
+    g_ManipulatorPos.x_pos = data.substring(0, firstComma).toFloat();
+    g_ManipulatorPos.y_pos = data.substring(firstComma + 1, secondComma).toFloat();
+    g_ManipulatorPos.z_pos = data.substring(secondComma + 1, thirdComma).toFloat();
 
-      int posCommaPos2 = data.indexOf(',', posCommaPos + 1);
-      g_ManipulatorPos.y_pos = (data.substring(posCommaPos + 1, posCommaPos2)).toDouble();
-
-      int posCommaPos3 = data.indexOf(',', posCommaPos2 + 1);
-      g_ManipulatorPos.z_pos = (data.substring(posCommaPos2 + 1, posCommaPos3)).toDouble();
-
-      int velColonPos = data.indexOf("vel:");
-      int velCommaPos = data.indexOf(',', velColonPos + 4);
-
-      if (velColonPos != -1 && velCommaPos != -1) {
-        g_JointSpeedCommand.joint1_vel = (data.substring(velColonPos + 4, velCommaPos)).toDouble();
-
-        int velCommaPos2 = data.indexOf(',', velCommaPos + 1);
-        g_JointSpeedCommand.joint2_vel = (data.substring(velCommaPos + 1, velCommaPos2)).toDouble();
-
-        int velCommaPos3 = data.indexOf(',', velCommaPos2 + 1);
-        g_JointSpeedCommand.joint3_vel = (data.substring(velCommaPos2 + 1, velCommaPos3)).toDouble();
-
-        int velCommaPos4 = data.indexOf(',', velCommaPos3 + 1);
-        g_JointSpeedCommand.joint4_vel = (data.substring(velCommaPos3 + 1, velCommaPos4)).toDouble();
-
-        return true;
-      }
-    }
+    return MANI_DATA_POS;
   }
-  return false;
+  else if (data.startsWith("vel:"))
+  {
+    data            = data.substring(4);
+    int firstComma  = data.indexOf(',');
+    int secondComma = data.indexOf(',', firstComma + 1);
+    int thirdComma  = data.indexOf(',', secondComma + 1);
+    int fourthComma = data.indexOf(',', thirdComma + 1);
+
+    g_JointSpeedCommand.joint1_vel = data.substring(0, firstComma).toFloat();
+    g_JointSpeedCommand.joint2_vel = data.substring(firstComma + 1, secondComma).toFloat();
+    g_JointSpeedCommand.joint3_vel = data.substring(secondComma + 1, thirdComma).toFloat();
+    g_JointSpeedCommand.joint4_vel = data.substring(thirdComma + 1, fourthComma).toFloat();
+
+    return MANI_DATA_VEL;
+  }
+  else if (data.startsWith("pick"))
+  {
+    return MANI_DATA_PICK;
+  }
+  else
+  {
+    return MANI_DATA_ERROR;
+  }
 }
 
 /* End of file -------------------------------------------------------- */

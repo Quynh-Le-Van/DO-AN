@@ -17,8 +17,8 @@
 #ifndef _MAIN_H
 #define _MAIN_H 
 /* Includes ----------------------------------------------------------- */
-#include "kinematic.h"
-#include "hw_init.h"
+#include "manipulator_pf.h"
+#include "Arduino.h"
 
 /* Public defines ---------------------------------------------------- */
 /* Public enumerate/structure ---------------------------------------- */

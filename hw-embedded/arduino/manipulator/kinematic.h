@@ -18,33 +18,10 @@
 #define _KINEMATIC_H
 /* Includes ----------------------------------------------------------- */
 #include <math.h>
-#include "platform.h"
+#include "Arduino.h"
 
 /* Public defines ---------------------------------------------------- */
 /* Public enumerate/structure ---------------------------------------- */
-//// Mobile Config ///////////
-typedef struct
-{
-  double x_pos;
-  double y_pos;
-  double theta;
-} Mobile_Pos_Config_T;
-
-typedef struct
-{
-  double x_vel;
-  double y_vel;
-  double theta_vel;
-} Mobile_Vel_Config_T;
-
-typedef struct
-{
-  double w1_vel;
-  double w2_vel;
-  double w3_vel;
-  double w4_vel;
-} Wheel_Vel_Config_T;
-
 /////// Manipulator Config //////////
 typedef struct
 {
@@ -79,8 +56,6 @@ typedef struct
 /* Public macros ----------------------------------------------------- */
 /* Public variables --------------------------------------------------- */
 /* Public function prototypes ---------------------------------------- */
-Mobile_Vel_Config_T ForwardKinematicMobileRobot(Wheel_Vel_Config_T wheel_vel);
-Wheel_Vel_Config_T InverseKinematicMobileRobot(Mobile_Vel_Config_T mobile_vel);
 Manipulator_Pos_Config_T ForwardKinematicManipulator(Manipulator_Angle_Config_T angle);
 Manipulator_Angle_Config_T InverseKinematicManipulator(Manipulator_Pos_Config_T man_pos);
 
