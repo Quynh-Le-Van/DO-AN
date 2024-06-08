@@ -54,6 +54,8 @@ Mobile_Vel_Config_T g_MobileSpeedCommand;
 Mobile_Vel_Config_T g_MobileSpeedCurent;
 Mobile_Pos_Config_T g_MobilePositionCurent;
 
+Manipulator_Pos_Config_T g_ManiPosCommand;
+
 /* Private variables -------------------------------------------------- */
 // PID MOTOR
 PID motorPID1(&g_MotorMobile[MOTOR_MOBILE_1].velCurrent, &g_MotorMobile[MOTOR_MOBILE_1].pwmOut,
@@ -218,7 +220,7 @@ void Mobile_TransmitData(void *data, Data_Type_T typedata)
   {
     Manipulator_Vel_Config_T *vel = (Manipulator_Vel_Config_T *)data;
     char tmpString[128];
-    sprintf(tmpString, "vel:%f,%f,%f\n", pos->x_pos, pos->y_pos, pos->z_pos);
+    sprintf(tmpString, "vel:%f,%f,%f\n", vel->x_vel, vel->y_vel, vel->z_vel);
     Serial.print(tmpString);
   }
   else if (typedata == DATA_GRIPPER_OPEN)
@@ -283,7 +285,7 @@ void Mobile_TrackingTrajectory()
         moTrajTHEPID.Compute();
         Mobile_SetSpeed(mobileVelCmd);
 
-        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) =< 0.1)
+        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) <= 0.1)
         {
           // Get desired pose at A
           mobileTrajRef.x_pos = 0;
@@ -311,23 +313,25 @@ void Mobile_TrackingTrajectory()
       if (millis() - currentTime >= 5000)
       {
         Manipulator_Pos_Config_T pos = { 0.55, 0, 0.05 };
-        Mobile_TransmitData(pos, DATA_POS);
+        Mobile_TransmitData((void *)(&pos), DATA_POS);
         currentTime = millis();
       }
       else if (millis() - currentTime >= 10000)
       {
-        Mobile_TransmitData("gripperopen", DATA_GRIPPER_OPEN);
+        char tmpStr[128] = "gripperopen";
+        Mobile_TransmitData((void *)tmpStr, DATA_GRIPPER_OPEN);
         currentTime = millis();
       }
       else if (millis() - currentTime >= 15000)
       {
-        Mobile_TransmitData("gripperclose", DATA_GRIPPER_CLOSE);
+        char tmpStr[128] = "gripperclose";
+        Mobile_TransmitData((void *)tmpStr , DATA_GRIPPER_CLOSE);
         currentTime = millis();
       }
       else if (millis() - currentTime >= 20000)
       {
         Manipulator_Pos_Config_T pos = { 0.2, 0, 0.3};
-        Mobile_TransmitData(pos, DATA_POS);
+        Mobile_TransmitData((void *)(&pos), DATA_POS);
         currentTime = millis();
       }
       else if (millis() - currentTime >= 25000)
@@ -360,7 +364,7 @@ void Mobile_TrackingTrajectory()
         moTrajTHEPID.Compute();
         Mobile_SetSpeed(mobileVelCmd);
 
-        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) =< 0.1)
+        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) <= 0.1)
         {
           // Get desired pose at A
           mobileTrajRef.x_pos = 0;
@@ -388,23 +392,25 @@ void Mobile_TrackingTrajectory()
       if (millis() - currentTime >= 5000)
       {
         Manipulator_Pos_Config_T pos = { 0.55, 0, 0.05 };
-        Mobile_TransmitData(pos, DATA_POS);
+        Mobile_TransmitData((void *)(&pos), DATA_POS);
         currentTime = millis();
       }
       else if (millis() - currentTime >= 10000)
       {
-        Mobile_TransmitData("gripperopen", DATA_GRIPPER_OPEN);
+        char tmpStr[128] = "gripperopen";
+        Mobile_TransmitData((void *)tmpStr, DATA_GRIPPER_OPEN);
         currentTime = millis();
       }
       else if (millis() - currentTime >= 15000)
       {
-        Mobile_TransmitData("gripperclose", DATA_GRIPPER_CLOSE);
+        char tmpStr[128] = "gripperclose";
+        Mobile_TransmitData((void *)tmpStr, DATA_GRIPPER_CLOSE);
         currentTime = millis();
       }
       else if (millis() - currentTime >= 20000)
       {
         Manipulator_Pos_Config_T pos = { 0.2, 0, 0.3};
-        Mobile_TransmitData(pos, DATA_POS);
+        Mobile_TransmitData((void *)(&pos), DATA_POS);
         currentTime = millis();
       }
       else if (millis() - currentTime >= 25000)
@@ -437,7 +443,7 @@ void Mobile_TrackingTrajectory()
         moTrajTHEPID.Compute();
         Mobile_SetSpeed(mobileVelCmd);
 
-        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) =< 0.1)
+        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) <= 0.1)
         {
           // Get desired pose at A
           mobileTrajRef.x_pos = 0;

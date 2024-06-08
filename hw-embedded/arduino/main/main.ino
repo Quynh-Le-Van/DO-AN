@@ -71,7 +71,7 @@ void loop()
   Serial2.print(String("Mobile: ") + g_MobileSpeedCommand.x_vel + String(", ") + g_MobileSpeedCommand.y_vel + String(", ") + g_MobileSpeedCommand.theta_vel + String(", "));
   Serial2.println("");
 
-  Serial2.print(String("Manipulator: ") + x + String(", ") + y + String(", ") + z + String("\n"));
+  Serial2.print(String("Manipulator: ") + g_ManiPosCommand.x_pos + String(", ") + g_ManiPosCommand.y_pos + String(", ") + g_ManiPosCommand.z_pos + String("\n"));
 
   nodeHandle.spinOnce();
   delay(100);
@@ -86,8 +86,8 @@ static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)
 
 static void ManipulatorCommandCallback(const geometry_msgs::Point &cmdPos)
 {
-  x = cmdPos.x;
-  y = cmdPos.y;
-  z =cmdPos.z;
+  g_ManiPosCommand.x_pos = cmdPos.x;
+  g_ManiPosCommand.y_pos = cmdPos.y;
+  g_ManiPosCommand.z_pos =cmdPos.z;
 }
 /* End of file -------------------------------------------------------- */

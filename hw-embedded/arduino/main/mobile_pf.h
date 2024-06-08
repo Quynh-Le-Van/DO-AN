@@ -20,8 +20,6 @@
 #include "kinematic.h"
 #include "platform.h"
 #include <PID_v1.h>
-#include "I2Cdev.h"
-#include "MPU6050_6Axis_MotionApps20.h"
 #include "Wire.h"
 
 /* Public defines ---------------------------------------------------- */
@@ -108,6 +106,8 @@ extern Mobile_Vel_Config_T g_MobileSpeedCommand;
 extern Mobile_Vel_Config_T g_MobileSpeedCurent;
 extern Mobile_Pos_Config_T g_MobilePositionCurent;
 extern Motor_Config_Pin_T MOTOR_PIN_LIST[MOTOR_MOBILE_UNKNOW];
+extern Manipulator_Pos_Config_T g_ManiPosCommand;
+
 
 /* Public function prototypes ---------------------------------------- */
 void Mobile_PIDInit(void);
