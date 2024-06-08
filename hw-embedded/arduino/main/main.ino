@@ -29,8 +29,6 @@ static void ManipulatorCommandCallback(const geometry_msgs::Point &cmdPos);
 
 /* Public variables --------------------------------------------------- */
 /* Private variables -------------------------------------------------- */
-float x, y, z;
-
 // ROS config
 ros::NodeHandle nodeHandle;
 ros::Subscriber<geometry_msgs::Twist> subMobileSpeedCmd("cmd_vel", MobileSpeedCommandCallback);
