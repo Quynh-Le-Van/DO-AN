@@ -91,6 +91,15 @@ typedef struct
   uint8_t prestate;
 } Motor_Config_T;
 
+// Mani
+typedef enum
+{
+  DATA_POS,
+  DATA_VEL,
+  DATA_GRIPPER_OPEN,
+  DATA_GRIPPER_CLOSE
+} Data_Type_T;
+
 /* Public macros ----------------------------------------------------- */
 /* Public variables --------------------------------------------------- */
 extern Motor_Config_T g_MotorMobile[MOTOR_MOBILE_UNKNOW];
@@ -107,6 +116,7 @@ Mobile_Vel_Config_T Mobile_ReadCurrentSpeed(void);
 Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void);
 void Test_SetPin(double vel);
 void Mobile_TrackingTrajectory();
+void Mobile_TransmitData(void *data, Data_Type_T typedata);
 void MPU_Init(void);
 
 /* End of file -------------------------------------------------------- */

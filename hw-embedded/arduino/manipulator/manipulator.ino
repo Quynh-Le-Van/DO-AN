@@ -32,7 +32,6 @@ void loop()
   if (Serial.available())
   {
     String data = Serial.readStringUntil('\n');
-    // String data = "pos:0.55,0,0.05";
     Serial.println(data);
 
     if (Mani_ReceiveData(data) == MANI_DATA_POS)

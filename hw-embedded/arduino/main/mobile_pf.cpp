@@ -23,8 +23,11 @@
 typedef enum
 {
   MOBILE_START,
-  MOBILE_ONGOING,
-  MOBILE_STOP
+  MOBILE_GO_TO_A,
+  MANI_PICK_UP,
+  MOBILE_GO_TO_B,
+  MANI_PUT_DOWN,
+  MOBILE_GO_TO_HOME,
 } MOBILE_STATE_T;
 
 /* Private macros ----------------------------------------------------- */
@@ -50,7 +53,6 @@ Wheel_Vel_Config_T g_MotorSpeedCommand;
 Mobile_Vel_Config_T g_MobileSpeedCommand;
 Mobile_Vel_Config_T g_MobileSpeedCurent;
 Mobile_Pos_Config_T g_MobilePositionCurent;
-MPU6050 mpu;
 
 /* Private variables -------------------------------------------------- */
 // PID MOTOR
@@ -86,15 +88,6 @@ uint8_t devStatus;      // return status after each device operation (0 = succes
 uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 uint8_t fifoBuffer[64]; // FIFO storage buffer
 
-// orientation/motion vars
-Quaternion q;        // [w, x, y, z]         quaternion container
-VectorFloat gravity; // [x, y, z]            gravity vector
-float euler[3];      // [psi, theta, phi]    Euler angle container
-float ypr[3];        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
-
-// ServoEasing Servo1;
-// ServoEasing Servo2;
-
 #define INFO(_ea, _eb, _pwm, _dirl, _dirr)                                             \
   {                                                                                    \
     .encoder_A = _ea, .encoder_B = _eb, .enable = _pwm, .dir_l = _dirl, .dir_r = _dirr \
@@ -115,6 +108,7 @@ static void Motor_ReadVelocityCallBack(void);
 static void Motor_SetVel(void);
 static Mobile_Vel_Config_T TransferFunctionToGlobal(Mobile_Vel_Config_T localMobile, double theta);
 static void MPU_Getangle(void);
+static double Mobile_CheckDistance(double x, double y, double x1, double y1);
 
 /* Function definitions ----------------------------------------------- */
 void Mobile_PIDInit(void)
@@ -158,34 +152,6 @@ void Mobile_PIDInit(void)
 
 void MPU_Init(void)
 {
-  Wire.begin();
-  Wire.setClock(400000); // 400kHz I2C clock. Comment this line if having compilation difficulties
-
-  // Serial.begin(115200);
-  mpu.initialize();
-  devStatus = mpu.dmpInitialize();
-
-  // supply your own gyro offsets here, scaled for min sensitivity
-  mpu.setXGyroOffset(220);
-  mpu.setYGyroOffset(76);
-  mpu.setZGyroOffset(-85);
-  mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
-
-  // make sure it worked (returns 0 if so)
-  if (devStatus == 0)
-  {
-    // Calibration Time: generate offsets and calibrate our MPU6050
-    mpu.CalibrateAccel(6);
-    mpu.CalibrateGyro(6);
-    mpu.PrintActiveOffsets();
-    mpu.setDMPEnabled(true);
-
-    mpuIntStatus = mpu.getIntStatus();
-    dmpReady     = true;
-
-    // get expected DMP packet size for later comparison
-    packetSize = mpu.dmpGetFIFOPacketSize();
-  }
 }
 
 void Mobile_SetSpeed(Mobile_Vel_Config_T speedCommand)
@@ -217,9 +183,9 @@ Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void)
   static float preTime = 0;
   float dx, dy, dtheta;
 
-  g_MobileSpeedCurent.x_vel     = round(g_MobileSpeedCurent.x_vel * 1000) / 1000;
-  g_MobileSpeedCurent.y_vel     = round(g_MobileSpeedCurent.y_vel * 1000) / 1000;
-  g_MobileSpeedCurent.theta_vel = round(g_MobileSpeedCurent.theta_vel * 1000) / 1000;
+  g_MobileSpeedCurent.x_vel     = round(g_MobileSpeedCurent.x_vel * 1000.0) / 1000.0;
+  g_MobileSpeedCurent.y_vel     = round(g_MobileSpeedCurent.y_vel * 1000.0) / 1000.0;
+  g_MobileSpeedCurent.theta_vel = round(g_MobileSpeedCurent.theta_vel * 1000.0) / 1000.0;
 
   dtheta                       = (g_MobileSpeedCurent.theta_vel * (float)(millis() - preTime) / 1000.000);
   g_MobilePositionCurent.theta = g_MobilePositionCurent.theta + dtheta;
@@ -239,6 +205,32 @@ Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void)
   return g_MobilePositionCurent;
 }
 
+void Mobile_TransmitData(void *data, Data_Type_T typedata)
+{
+  if (typedata == DATA_POS)
+  {
+    Manipulator_Pos_Config_T *pos = (Manipulator_Pos_Config_T *)data;
+    char tmpString[128];
+    sprintf(tmpString, "pos:%f,%f,%f\n", pos->x_pos, pos->y_pos, pos->z_pos);
+    Serial.print(tmpString);
+  }
+  else if (typedata == DATA_VEL)
+  {
+    Manipulator_Vel_Config_T *vel = (Manipulator_Vel_Config_T *)data;
+    char tmpString[128];
+    sprintf(tmpString, "vel:%f,%f,%f\n", pos->x_pos, pos->y_pos, pos->z_pos);
+    Serial.print(tmpString);
+  }
+  else if (typedata == DATA_GRIPPER_OPEN)
+  {
+    Serial.println("gripperclose");
+  }
+  else if (typedata == DATA_GRIPPER_OPEN)
+  {
+    Serial.println("gripperopen");
+  }
+}
+
 void Mobile_TrackingTrajectory()
 {
 #define SAMPLE_TIME (0.01) // second
@@ -250,70 +242,220 @@ void Mobile_TrackingTrajectory()
   unsigned long desiredDuration = TIME_SIM; // 10 seconds
   unsigned long currentTime     = 0;
   double tmpTime                = 0;
-  double timeInterval           = 0;
 
   switch (mobileState)
   {
   case MOBILE_START:
-    mobileState = MOBILE_ONGOING;
+
+    // Start position 
+    mobileTrajRef.x_pos = 0;
+    mobileTrajRef.y_pos = 0;
+    mobileTrajRef.theta = 0;
+
+    // Calculate command velocity
+    moTrajXPID.Compute();
+    moTrajYPID.Compute();
+    moTrajTHEPID.Compute();
+    Mobile_SetSpeed(mobileVelCmd);
+
+    mobileState = MOBILE_GO_TO_A;
     break;
 
-  case MOBILE_ONGOING:
-    // while (tmpTime < desiredDuration)
-    // {
-    //   MPU_Getangle();
-    //   currentTime = millis();
-
-    //   if (millis() - startTime >= 10)
-    //   {
-    //     startTime = currentTime;
-    //     tmpTime   = (double)(millis() / 1000.0);
-    //     timeInterval += 0.1;
-
-    //     //  Get desired trajectoy
-    //     mobileTrajRef.x_pos = 0;
-    //     mobileTrajRef.y_pos = 0;
-    //     mobileTrajRef.theta = 0;
-
-    //     // Calculate command velocity
-    //     moTrajXPID.Compute();
-    //     moTrajYPID.Compute();
-    //     moTrajTHEPID.Compute();
-    //     Mobile_SetSpeed(mobileVelCmd);
-
-    //     // Serial.println(tmpTime);
-    //     // delay(100);
-    //     // Check reach goal
-    //     if (g_MobilePositionCurent.x_pos >= 1)
-    //     {
-    //       mobileVelCmd.x_vel     = 0;
-    //       mobileVelCmd.y_vel     = 0;
-    //       mobileVelCmd.theta_vel = 0;
-
-    //       Mobile_SetSpeed(mobileVelCmd);
-    //       break;
-    //     }
-    //   }
-    // }
-
-    mobileState = MOBILE_STOP;
-    break;
-
-  case MOBILE_STOP:
-    while(1)
+  case MOBILE_GO_TO_A:
+    while (1)
     {
-      // Servo1.setEasingType(EASE_CUBIC_IN_OUT); // EASE_LINEAR is default
-      // Servo2.setEasingType(EASE_CUBIC_IN_OUT); // EASE_LINEAR is default
-      // Servo1.setEaseTo(0, 40);  // Non blocking call
-      // Servo2.startEaseTo(90, 40, START_UPDATE_BY_INTERRUPT);  // Non blocking call
-      
-      // delay(5000);
+      MPU_Getangle();
+      currentTime = millis();
 
-      // Servo1.startEaseTo(180, 40);  // Non blocking call
-      // Servo2.startEaseTo(0, 40, START_UPDATE_BY_INTERRUPT);  // Non blocking call
+      if (millis() - currentTime >= 10)
+      {
+        tmpTime     = (double)((millis() - currentTime) / 1000.0);
+        currentTime = millis();
+
+        //  Get desired trajectoy
+        mobileTrajRef.x_pos = 0;
+        mobileTrajRef.y_pos = 0;
+        mobileTrajRef.theta = 0;
+
+        // Calculate command velocity
+        moTrajXPID.Compute();
+        moTrajYPID.Compute();
+        moTrajTHEPID.Compute();
+        Mobile_SetSpeed(mobileVelCmd);
+
+        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) =< 0.1)
+        {
+          // Get desired pose at A
+          mobileTrajRef.x_pos = 0;
+          mobileTrajRef.y_pos = 0;
+          mobileTrajRef.theta = 0;
+
+          // Calculate command velocity
+          moTrajXPID.Compute();
+          moTrajYPID.Compute();
+          moTrajTHEPID.Compute();
+          Mobile_SetSpeed(mobileVelCmd);
+
+          mobileState = MANI_PICK_UP;
+          break;
+        }
+      }
     }
-
     break;
+
+  case MANI_PICK_UP:
+    currentTime = millis();
+
+    while (1)
+    {
+      if (millis() - currentTime >= 5000)
+      {
+        Manipulator_Pos_Config_T pos = { 0.55, 0, 0.05 };
+        Mobile_TransmitData(pos, DATA_POS);
+        currentTime = millis();
+      }
+      else if (millis() - currentTime >= 10000)
+      {
+        Mobile_TransmitData("gripperopen", DATA_GRIPPER_OPEN);
+        currentTime = millis();
+      }
+      else if (millis() - currentTime >= 15000)
+      {
+        Mobile_TransmitData("gripperclose", DATA_GRIPPER_CLOSE);
+        currentTime = millis();
+      }
+      else if (millis() - currentTime >= 20000)
+      {
+        Manipulator_Pos_Config_T pos = { 0.2, 0, 0.3};
+        Mobile_TransmitData(pos, DATA_POS);
+        currentTime = millis();
+      }
+      else if (millis() - currentTime >= 25000)
+      {
+        mobileState = MOBILE_GO_TO_B;
+        break;
+      }
+    }
+    break;
+
+  case MOBILE_GO_TO_B:
+    while (1)
+    {
+      MPU_Getangle();
+      currentTime = millis();
+
+      if (millis() - currentTime >= 10)
+      {
+        tmpTime     = (double)((millis() - currentTime) / 1000.0);
+        currentTime = millis();
+
+        //  Get desired trajectoy
+        mobileTrajRef.x_pos = 0;
+        mobileTrajRef.y_pos = 0;
+        mobileTrajRef.theta = 0;
+
+        // Calculate command velocity
+        moTrajXPID.Compute();
+        moTrajYPID.Compute();
+        moTrajTHEPID.Compute();
+        Mobile_SetSpeed(mobileVelCmd);
+
+        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) =< 0.1)
+        {
+          // Get desired pose at A
+          mobileTrajRef.x_pos = 0;
+          mobileTrajRef.y_pos = 0;
+          mobileTrajRef.theta = 0;
+
+          // Calculate command velocity
+          moTrajXPID.Compute();
+          moTrajYPID.Compute();
+          moTrajTHEPID.Compute();
+          Mobile_SetSpeed(mobileVelCmd);
+
+          mobileState = MANI_PICK_UP;
+          break;
+        }
+      }
+    }
+    break;
+  
+  case MANI_PUT_DOWN:
+    currentTime = millis();
+
+    while (1)
+    {
+      if (millis() - currentTime >= 5000)
+      {
+        Manipulator_Pos_Config_T pos = { 0.55, 0, 0.05 };
+        Mobile_TransmitData(pos, DATA_POS);
+        currentTime = millis();
+      }
+      else if (millis() - currentTime >= 10000)
+      {
+        Mobile_TransmitData("gripperopen", DATA_GRIPPER_OPEN);
+        currentTime = millis();
+      }
+      else if (millis() - currentTime >= 15000)
+      {
+        Mobile_TransmitData("gripperclose", DATA_GRIPPER_CLOSE);
+        currentTime = millis();
+      }
+      else if (millis() - currentTime >= 20000)
+      {
+        Manipulator_Pos_Config_T pos = { 0.2, 0, 0.3};
+        Mobile_TransmitData(pos, DATA_POS);
+        currentTime = millis();
+      }
+      else if (millis() - currentTime >= 25000)
+      {
+        mobileState = MOBILE_GO_TO_B;
+        break;
+      }
+    }
+    break; 
+
+  case MOBILE_GO_TO_HOME:
+    while (1)
+    {
+      MPU_Getangle();
+      currentTime = millis();
+
+      if (millis() - currentTime >= 10)
+      {
+        tmpTime     = (double)((millis() - currentTime) / 1000.0);
+        currentTime = millis();
+
+        //  Get desired trajectoy
+        mobileTrajRef.x_pos = 0;
+        mobileTrajRef.y_pos = 0;
+        mobileTrajRef.theta = 0;
+
+        // Calculate command velocity
+        moTrajXPID.Compute();
+        moTrajYPID.Compute();
+        moTrajTHEPID.Compute();
+        Mobile_SetSpeed(mobileVelCmd);
+
+        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) =< 0.1)
+        {
+          // Get desired pose at A
+          mobileTrajRef.x_pos = 0;
+          mobileTrajRef.y_pos = 0;
+          mobileTrajRef.theta = 0;
+
+          // Calculate command velocity
+          moTrajXPID.Compute();
+          moTrajYPID.Compute();
+          moTrajTHEPID.Compute();
+          Mobile_SetSpeed(mobileVelCmd);
+
+          mobileState = MANI_PICK_UP;
+          break;
+        }
+      }
+    }
+    break; 
 
   default:
     break;
@@ -426,22 +568,17 @@ static Mobile_Vel_Config_T TransferFunctionToGlobal(Mobile_Vel_Config_T local, d
 
 static void MPU_Getangle(void)
 {
-  if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer))
-  {
-
-    // display Euler angles in degrees
-    mpu.dmpGetQuaternion(&q, fifoBuffer);
-    mpu.dmpGetGravity(&gravity, &q);
-    mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-    
-    yawValue = ypr[0] * 180 / M_PI;
-    yawValue = round(yawValue * 2) / 2.0;
-    yawValue = (yawValue >= preYawValue + 0.5 || yawValue <= preYawValue - 0.5) ? yawValue : preYawValue;
-    Serial.println(yawValue);
-  }
 }
 
-// Timer 1 Interupt
+static double Mobile_CheckDistance(double x, double y, double x1, double y1)
+{
+  double dx       = x1 - x;
+  double dy       = y1 - y;
+  double distance = sqrt(dx * dx + dy * dy);
+  return distance;
+}
+
+/*-------------------Timer 1 Interupt-----------------*/
 ISR(TIMER1_OVF_vect)
 {
   TCNT1 = 65400;
