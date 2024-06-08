@@ -22,8 +22,8 @@
 /* Private macros ----------------------------------------------------- */
 #define MAX_DEGREE        (180)
 #define MIN_DEGREE        (0)
-#define OFFSET_DEGREE_0   (-150)
-#define OFFSET_DEGREE_180 (60)
+#define OFFSET_DEGREE_0   (-65)
+#define OFFSET_DEGREE_180 (65)
 
 /* Private function prototypes ---------------------------------------- */
 /* Public variables --------------------------------------------------- */
@@ -38,15 +38,21 @@ ServoEasing g_BaseServo, g_ShoulderServo, g_EllowServo, g_ArmServo, g_GripperSer
 void Mani_Init(void)
 {
   g_BaseServo.attach(SERVO_BASE, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
-                     DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE - 90, MAX_DEGREE - 90);
+                     DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE,  MAX_DEGREE);
   g_ShoulderServo.attach(SERVO_SHOULDER, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
-                         DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180 + 5, MIN_DEGREE, MAX_DEGREE);
+                         DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE, MAX_DEGREE);
   g_EllowServo.attach(SERVO_ELLOW, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
                       DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE, MAX_DEGREE);
   g_ArmServo.attach(SERVO_ARM, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
                     DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE, MAX_DEGREE);
   g_GripperServo.attach(SERVO_GRIPPER, DEFAULT_MICROSECONDS_FOR_0_DEGREE + OFFSET_DEGREE_0,
                         DEFAULT_MICROSECONDS_FOR_180_DEGREE + OFFSET_DEGREE_180, MIN_DEGREE, MAX_DEGREE);
+
+  g_BaseServo.write(0);
+  g_ShoulderServo.write(90);
+  g_EllowServo.write(135);
+  g_ArmServo.write(45);
+  g_GripperServo.write(0);
 
   g_BaseServo.setSpeed(SERVO_SPEED_DEFAULT);
   g_ShoulderServo.setSpeed(SERVO_SPEED_DEFAULT);
@@ -66,6 +72,9 @@ void Mani_SetSpeedJoint(Manipulator_Angle_Vel_T vel)
   g_ShoulderServo.setSpeed(vel.joint2_vel);
   g_EllowServo.setSpeed(vel.joint3_vel);
   g_ArmServo.setSpeed(vel.joint4_vel);
+
+  // Serial.print(String("Vel: ") + vel.joint1_vel + String(", ") + vel.joint2_vel + String(", ") + vel.joint3_vel +
+  //              String(", ") + vel.joint4_vel + String("\n"));
 }
 
 void Mani_SetPosition(Manipulator_Pos_Config_T pos)
@@ -77,20 +86,26 @@ void Mani_SetPosition(Manipulator_Pos_Config_T pos)
   angle.joint_3 = RAD_TO_DEG * (angle.joint_3);
   angle.joint_4 = RAD_TO_DEG * (angle.joint_4);
 
+  angle.joint_1 = map(angle.joint_1, 90, -90, MIN_DEGREE, MAX_DEGREE);
+  angle.joint_4 = map(angle.joint_4, -90, 90, MIN_DEGREE, MAX_DEGREE);
+
   g_BaseServo.setEasingType(EASE_CUBIC_IN_OUT);
   g_ShoulderServo.setEasingType(EASE_CUBIC_IN_OUT);
   g_EllowServo.setEasingType(EASE_CUBIC_IN_OUT);
   g_ArmServo.setEasingType(EASE_CUBIC_IN_OUT);
 
-  g_BaseServo.startEaseTo(abs(angle.joint_1));
+  g_BaseServo.startEaseTo((angle.joint_1));
   g_ShoulderServo.startEaseTo(abs(angle.joint_2));
   g_EllowServo.startEaseTo(abs(angle.joint_3));
   g_ArmServo.startEaseTo(abs(angle.joint_4));
 
-  Serial.print(String("Ac: ") + angle.joint_1 + String(", ") + angle.joint_2 + String(", ") + angle.joint_3 +
-               String(", ") + angle.joint_4 + String("\n"));
-  Serial.print(String("Command: ") + pos.x_pos + String(", ") + pos.y_pos + String(", ") + pos.z_pos +
-               String("\n"));
+  // Serial.print(angle.joint_4, 5);
+  // Serial.println("");
+
+  // Serial.print(String("Ac: ") + angle.joint_1 + String(", ") + angle.joint_2 + String(", ") + angle.joint_3 +
+  //              String(", ") + angle.joint_4 + String("\n"));
+  // Serial.print(String("Command: ") + pos.x_pos + String(", ") + pos.y_pos + String(", ") + pos.z_pos +
+  //              String("\n"));
   // test:
 }
 
@@ -139,9 +154,9 @@ MANI_DATA_TYPE_T Mani_ReceiveData(String data)
 
     return MANI_DATA_VEL;
   }
-  else if (data.startsWith("pick"))
+  else if (data.startsWith("gripperclose"))
   {
-    return MANI_DATA_PICK;
+    return MANI_DATA_GRIPPER_CLOSE;
   }
   else
   {

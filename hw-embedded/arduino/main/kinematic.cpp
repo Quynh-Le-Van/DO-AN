@@ -27,8 +27,8 @@
 #define LINK_ARM_3    (0.15)
 #define LINK_ARM_4    (0.05)
 
-#define RPM_TO_RAD_PER_SEC(rpm)       ((rpm) * 2 * 3.14159 / 60)
-#define RAD_PER_SEC_TO_RPM(radPerSec) ((radPerSec) * 60 / (2 * 3.14159))
+#define RPM_TO_RAD_PER_SEC(rpm)       ((rpm) * 2.0 * 3.14159 / 60.0)
+#define RAD_PER_SEC_TO_RPM(radPerSec) ((radPerSec) * 60.0 / (2.0 * 3.14159))
 
 /* Private enumerate/structure ---------------------------------------- */
 /* Private macros ----------------------------------------------------- */
