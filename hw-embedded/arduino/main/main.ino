@@ -62,24 +62,6 @@ void setup()
 
 void loop()
 {
-  // if (CHECK_PUBLISHER_RATE(preTimeCommand))
-  // {
-  //   Mobile_SetSpeed(g_MobileSpeedCommand);
-  //   g_MobileSpeedCurent = Mobile_ReadCurrentSpeed();
-  //   g_MobilePositionCurent = Mobile_ReadCurrentPosition();
-
-  //   MobileSpeedMsg.linear.x = g_MobileSpeedCurent.x_vel;
-  //   MobileSpeedMsg.linear.y = g_MobileSpeedCurent.y_vel;
-  //   MobileSpeedMsg.angular.z = g_MobileSpeedCurent.theta_vel;
-  //   pubMobileSpeed.publish(&MobileSpeedMsg);
-
-  //   MobilePosMsg.x = g_MobilePositionCurent.x_pos;
-  //   MobilePosMsg.y = g_MobilePositionCurent.y_pos;
-  //   MobilePosMsg.z = g_MobilePositionCurent.theta;
-  //   pubMobilePosMsg.publish(&MobilePosMsg);
-
-  //   preTimeCommand = millis();
-  // }
 
   Serial2.print(g_MobileSpeedCommand.x_vel + String(", "));
   Serial2.print(g_MobileSpeedCommand.y_vel + String(", "));

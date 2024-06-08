@@ -4,11 +4,12 @@ from __future__ import print_function
 
 import threading
 
-import roslib
-roslib.load_manifest('teleop_twist_keyboard')
+import roslib; roslib.load_manifest('teleop_twist_keyboard')
 import rospy
 
-from geometry_msgs.msg import Twist, Pose
+from geometry_msgs.msg import Twist
+from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
 
 import sys
@@ -20,11 +21,13 @@ else:
     import termios
     import tty
 
-TwistMsg = Twist
 
+TwistMsg = Twist
+PointMsg = Point
+BoolMsg = Bool
 
 msg = """
-Reading from the keyboard and Publishing to Twist!
+Reading from the keyboard  and Publishing to Twist and Point!
 ---------------------------
 Moving around:
    u    i    o
@@ -40,17 +43,20 @@ For Holonomic mode (strafing), hold down the shift key:
 t : up (+z)
 b : down (-z)
 
+Gripper control:
+g : open gripper
+h : close gripper
+
+Control end effector position in XYZ space:
+x/X : increase/decrease x by 0.01
+y/Y : increase/decrease y by 0.01
+z/Z : increase/decrease z by 0.01
+
 anything else : stop
 
-q/z : increase/decrease max speeds by 10%
-w/x : increase/decrease only linear speed by 10%
-e/c : increase/decrease only angular speed by 10%
-
-a/d : increase/decrease end-effector's x position
-s/w : increase/decrease end-effector's y position
-
-g : close gripper
-h : open gripper
+q/Q : increase/decrease max speeds by 10%
+w/W : increase/decrease only linear speed by 10%
+e/E : increase/decrease only angular speed by 10%
 
 CTRL-C to quit
 """
@@ -74,35 +80,37 @@ moveBindings = {
     'M': (-1, 1, 0, 0),
     't': (0, 0, 1, 0),
     'b': (0, 0, -1, 0),
-    'w': (0, 0, 0, 0, 1, 0),  # Increase end-effector's x position
-    's': (0, 0, 0, 0, -1, 0), # Decrease end-effector's x position
-    'a': (0, 0, 0, 0, 0, 1),  # Increase end-effector's y position
-    'd': (0, 0, 0, 0, 0, -1), # Decrease end-effector's y position
 }
 
 speedBindings = {
     'q': (1.1, 1.1),
-    'z': (.9, .9),
+    'Q': (.9, .9),
     'w': (1.1, 1),
-    'x': (.9, 1),
+    'W': (.9, 1),
     'e': (1, 1.1),
-    'c': (1, .9),
+    'E': (1, .9),
+}
+
+armBindings = {
+    'x': (0.01, 0, 0),
+    'X': (-0.01, 0, 0),
+    'y': (0, 0.01, 0),
+    'Y': (0, -0.01, 0),
+    'z': (0, 0, 0.01),
+    'Z': (0, 0, -0.01),
 }
 
 gripperBindings = {
-    'g': True,  # Close gripper
-    'h': False  # Open gripper
+    'g': True,
+    'h': False,
 }
-
-pressed_keys = set()  # Lưu trữ các phím đang được nhấn
-
 
 class PublishThread(threading.Thread):
     def __init__(self, rate):
         super(PublishThread, self).__init__()
-        self.publisher = rospy.Publisher('cmd_vel', TwistMsg, queue_size=1)
-        self.arm_publisher = rospy.Publisher('arm_cmd', Pose, queue_size=1)
-        self.gripper_publisher = rospy.Publisher('gripper_cmd', Bool, queue_size=1)
+        self.publisher_twist = rospy.Publisher('cmd_vel', TwistMsg, queue_size=1)
+        self.publisher_point = rospy.Publisher('arm_position', PointMsg, queue_size=1)
+        self.publisher_gripper = rospy.Publisher('gripper_state', BoolMsg, queue_size=1)
         self.x = 0.0
         self.y = 0.0
         self.z = 0.0
@@ -111,6 +119,7 @@ class PublishThread(threading.Thread):
         self.turn = 0.0
         self.arm_x = 0.0
         self.arm_y = 0.0
+        self.arm_z = 0.0
         self.gripper_state = False
         self.condition = threading.Condition()
         self.done = False
@@ -122,7 +131,18 @@ class PublishThread(threading.Thread):
 
         self.start()
 
-    def update(self, x, y, z, th, speed, turn, arm_x, arm_y, gripper_state):
+    def wait_for_subscribers(self):
+        i = 0
+        while not rospy.is_shutdown() and self.publisher_twist.get_num_connections() == 0:
+            if i == 4:
+                print("Waiting for subscriber to connect to {}".format(self.publisher_twist.name))
+            rospy.sleep(0.5)
+            i += 1
+            i = i % 5
+        if rospy.is_shutdown():
+            raise Exception("Got shutdown request before subscribers connected")
+
+    def update(self, x, y, z, th, speed, turn, arm_x, arm_y, arm_z, gripper_state):
         self.condition.acquire()
         self.x = x
         self.y = y
@@ -132,44 +152,68 @@ class PublishThread(threading.Thread):
         self.turn = turn
         self.arm_x = arm_x
         self.arm_y = arm_y
+        self.arm_z = arm_z
         self.gripper_state = gripper_state
-        if pressed_keys:
-            self.condition.notify()
+        self.condition.notify()
         self.condition.release()
+
+    def stop(self):
+        self.done = True
+        self.update(0, 0, 0, 0, 0, 0, 0, 0, 0, False)
+        self.join()
 
     def run(self):
         twist_msg = TwistMsg()
-        pose_msg = Pose()
-        gripper_msg = Bool()
+        if stamped:
+            twist = twist_msg.twist
+            twist_msg.header.stamp = rospy.Time.now()
+            twist_msg.header.frame_id = twist_frame
+        else:
+            twist = twist_msg
+
+        point_msg = PointMsg()
+        gripper_msg = BoolMsg()
 
         while not self.done:
-            twist_msg.linear.x = self.x * self.speed
-            twist_msg.linear.y = self.y * self.speed
-            twist_msg.linear.z = self.z * self.speed
-            twist_msg.angular.x = 0
-            twist_msg.angular.y = 0
-            twist_msg.angular.z = self.th * self.turn
+            if stamped:
+                twist_msg.header.stamp = rospy.Time.now()
+            self.condition.acquire()
+            self.condition.wait(self.timeout)
 
-            pose_msg.position.x = self.arm_x
-            pose_msg.position.y = self.arm_y
+            twist.linear.x = self.x * self.speed
+            twist.linear.y = self.y * self.speed
+            twist.linear.z = self.z * self.speed
+            twist.angular.x = 0
+            twist.angular.y = 0
+            twist.angular.z = self.th * self.turn
+
+            point_msg.x = self.arm_x
+            point_msg.y = self.arm_y
+            point_msg.z = self.arm_z
 
             gripper_msg.data = self.gripper_state
 
-            self.publisher.publish(twist_msg)
-            self.arm_publisher.publish(pose_msg)
-            self.gripper_publisher.publish(gripper_msg)
+            self.condition.release()
 
-            rospy.sleep(self.timeout if self.timeout is not None else 0)
+            self.publisher_twist.publish(twist_msg)
+            self.publisher_point.publish(point_msg)
+            self.publisher_gripper.publish(gripper_msg)
 
-        twist_msg.linear.x = 0
-        twist_msg.linear.y = 0
-        twist_msg.linear.z = 0
-        twist_msg.angular.x = 0
-        twist_msg.angular.y = 0
-        twist_msg.angular.z = 0
-        self.publisher.publish(twist_msg)
-        self.arm_publisher.publish(pose_msg)
-        self.gripper_publisher.publish(gripper_msg)
+        twist.linear.x = 0
+        twist.linear.y = 0
+        twist.linear.z = 0
+        twist.angular.x = 0
+        twist.angular.y = 0
+        twist.angular.z = 0
+        self.publisher_twist.publish(twist_msg)
+
+        point_msg.x = 0
+        point_msg.y = 0
+        point_msg.z = 0
+        self.publisher_point.publish(point_msg)
+
+        gripper_msg.data = False
+        self.publisher_gripper.publish(gripper_msg)
 
 
 def getKey(settings, timeout):
@@ -185,7 +229,6 @@ def getKey(settings, timeout):
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
     return key
 
-
 def saveTerminalSettings():
     if sys.platform == 'win32':
         return None
@@ -199,7 +242,7 @@ def restoreTerminalSettings(old_settings):
 def vels(speed, turn):
     return "currently:\tspeed %s\tturn %s " % (speed, turn)
 
-def main():
+if __name__ == "__main__":
     settings = saveTerminalSettings()
 
     rospy.init_node('teleop_twist_keyboard')
@@ -217,24 +260,29 @@ def main():
 
     pub_thread = PublishThread(repeat)
 
+    x = 0
+    y = 0
+    z = 0
+    th = 0
+    arm_x = 0
+    arm_y = 0
+    arm_z = 0
+    gripper_state = False
+    status = 0
+
     try:
         pub_thread.wait_for_subscribers()
-        pub_thread.update(0, 0, 0, 0, speed, turn, 0, 0, False)  # Khởi tạo các giá trị ban đầu
+        pub_thread.update(x, y, z, th, speed, turn, arm_x, arm_y, arm_z, gripper_state)
 
         print(msg)
-        print(vels(speed,turn))
-        while not rospy.is_shutdown():
+        print(vels(speed, turn))
+        while True:
             key = getKey(settings, key_timeout)
             if key in moveBindings.keys():
                 x = moveBindings[key][0]
                 y = moveBindings[key][1]
                 z = moveBindings[key][2]
                 th = moveBindings[key][3]
-                arm_x = moveBindings[key][4] if len(moveBindings[key]) > 4 else 0
-                arm_y = moveBindings[key][5] if len(moveBindings[key]) > 5 else 0
-                gripper_state = False
-                if len(moveBindings[key]) > 6:
-                    gripper_state = moveBindings[key][6]
             elif key in speedBindings.keys():
                 speed = min(speed_limit, speed * speedBindings[key][0])
                 turn = min(turn_limit, turn * speedBindings[key][1])
@@ -243,29 +291,24 @@ def main():
                 if turn == turn_limit:
                     print("Angular speed limit reached!")
                 print(vels(speed, turn))
+                if status == 14:
+                    print(msg)
+                status = (status + 1) % 15
+            elif key in armBindings.keys():
+                arm_x += armBindings[key][0]
+                arm_y += armBindings[key][1]
+                arm_z += armBindings[key][2]
             elif key in gripperBindings.keys():
                 gripper_state = gripperBindings[key]
-                print("Gripper state: {}".format("Closed" if gripper_state else "Opened"))
             else:
-                # Skip updating cmd_vel if key timeout and robot already
-                # stopped.
-                if key == '' and x == 0 and y == 0 and z == 0 and th == 0:
-                    continue
                 x = 0
                 y = 0
                 z = 0
                 th = 0
-                arm_x = 0
-                arm_y = 0
-                gripper_state = False
                 if key == '\x03':
                     break
 
-            pressed_keys.clear()  # Xóa tất cả các phím được nhấn
-            if key:  # Nếu có phím được nhấn, thêm vào tập hợp
-                pressed_keys.add(key)
-
-            pub_thread.update(x, y, z, th, speed, turn, arm_x, arm_y, gripper_state)
+            pub_thread.update(x, y, z, th, speed, turn, arm_x, arm_y, arm_z, gripper_state)
 
     except Exception as e:
         print(e)
@@ -273,7 +316,3 @@ def main():
     finally:
         pub_thread.stop()
         restoreTerminalSettings(settings)
-
-
-if __name__ == "__main__":
-    main()
