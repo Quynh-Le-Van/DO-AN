@@ -57,6 +57,7 @@ all: gtest/all
 all: lino_msgs/all
 all: robot_trajectory/all
 all: linorobot/all
+all: URDF___/all
 
 .PHONY : all
 
@@ -65,6 +66,7 @@ preinstall: gtest/preinstall
 preinstall: lino_msgs/preinstall
 preinstall: robot_trajectory/preinstall
 preinstall: linorobot/preinstall
+preinstall: URDF___/preinstall
 
 .PHONY : preinstall
 
@@ -78,8 +80,27 @@ clean: gtest/clean
 clean: lino_msgs/clean
 clean: robot_trajectory/clean
 clean: linorobot/clean
+clean: URDF___/clean
 
 .PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory URDF___
+
+# Recursive "all" directory target.
+URDF___/all:
+
+.PHONY : URDF___/all
+
+# Recursive "preinstall" directory target.
+URDF___/preinstall:
+
+.PHONY : URDF___/preinstall
+
+# Recursive "clean" directory target.
+URDF___/clean:
+
+.PHONY : URDF___/clean
 
 #=============================================================================
 # Directory level rules for directory gtest

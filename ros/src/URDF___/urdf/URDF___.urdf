@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="URDF___">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.00405596510534162 -8.35681439853575E-06 0.0261742150252001"
+        rpy="0 0 0" />
+      <mass
+        value="2.73561143246653" />
+      <inertia
+        ixx="0.0221972066308063"
+        ixy="3.05734168376215E-10"
+        ixz="-5.80748843512715E-06"
+        iyy="0.0221847224219223"
+        iyz="5.11435242237354E-12"
+        izz="0.043239086557537" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="Banhxe">
+    <inertial>
+      <origin
+        xyz="-0.00418978253380978 -1.37437949909724E-10 0.0260711442925828"
+        rpy="0 0 0" />
+      <mass
+        value="2.73416861251952" />
+      <inertia
+        ixx="0.0221971725884675"
+        ixy="1.0716189302675E-11"
+        ixz="-5.80748843512724E-06"
+        iyy="0.0221846626589164"
+        iyz="5.11435270845892E-12"
+        izz="0.0432390525185816" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/Banhxe.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/Banhxe.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="banhxe"
+    type="fixed">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Banhxe" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="L_truoc">
+    <inertial>
+      <origin
+        xyz="1.88433393627507E-06 -2.13624641787202E-06 0.0262772387104297"
+        rpy="0 0 0" />
+      <mass
+        value="0.278706565052666" />
+      <inertia
+        ixx="8.31166401480294E-05"
+        ixy="-2.65441218575858E-09"
+        ixz="-5.45136974802306E-09"
+        iyy="8.31172485781589E-05"
+        iyz="6.11241292855609E-09"
+        izz="9.70244078929607E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/L_truoc.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/L_truoc.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="L_truoc"
+    type="continuous">
+    <origin
+      xyz="0.098 0.2484 -0.031"
+      rpy="1.5708 0 0" />
+    <parent
+      link="Banhxe" />
+    <child
+      link="L_truoc" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="L_sau">
+    <inertial>
+      <origin
+        xyz="2.01072800331409E-06 -2.03076308410988E-06 0.0262772387104536"
+        rpy="0 0 0" />
+      <mass
+        value="0.278706565052627" />
+      <inertia
+        ixx="8.31169189185509E-05"
+        ixy="-2.67166258158781E-09"
+        ixz="-5.76351123862844E-09"
+        iyy="8.31169698065327E-05"
+        iyz="5.81914316175128E-09"
+        izz="9.70244078918405E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/L_sau.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/L_sau.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="L_sau"
+    type="continuous">
+    <origin
+      xyz="-0.109 0.2484 -0.031"
+      rpy="1.5708 0 0" />
+    <parent
+      link="Banhxe" />
+    <child
+      link="L_sau" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="R_truoc">
+    <inertial>
+      <origin
+        xyz="-2.20874240475233E-06 -1.77048583158146E-06 -0.0263998689010846"
+        rpy="0 0 0" />
+      <mass
+        value="0.278706565052654" />
+      <inertia
+        ixx="8.31175538211208E-05"
+        ixy="2.60134616042799E-09"
+        ixz="-6.41777761542442E-09"
+        iyy="8.31163349050889E-05"
+        iyz="-5.08832060980675E-09"
+        izz="9.7024407892957E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/R_truoc.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/R_truoc.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="R_truoc"
+    type="continuous">
+    <origin
+      xyz="0.098 -0.2484 -0.031"
+      rpy="1.5708 0 0" />
+    <parent
+      link="Banhxe" />
+    <child
+      link="R_truoc" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="R_sau">
+    <inertial>
+      <origin
+        xyz="8.61094076355651E-07 -2.69663845789414E-06 -0.0263998689011268"
+        rpy="0 0 0" />
+      <mass
+        value="0.278706565052669" />
+      <inertia
+        ixx="8.31147505320892E-05"
+        ixy="-1.52497254584395E-09"
+        ixz="2.44979715786847E-09"
+        iyy="8.31191381940595E-05"
+        iyz="-7.81523703246055E-09"
+        izz="9.70244078929343E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/R_sau.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/R_sau.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="R_sau"
+    type="fixed">
+    <origin
+      xyz="-0.109 -0.2484 -0.031"
+      rpy="1.5708 0 0" />
+    <parent
+      link="Banhxe" />
+    <child
+      link="R_sau" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="Canhtay">
+    <inertial>
+      <origin
+        xyz="-0.0278263223311903 6.55031584528842E-15 -0.00350000000001216"
+        rpy="0 0 0" />
+      <mass
+        value="0.534098766226502" />
+      <inertia
+        ixx="0.00566428588992574"
+        ixy="8.48087174128761E-19"
+        ixz="1.76598786924598E-20"
+        iyy="0.00596374884636165"
+        iyz="-1.95172123468629E-17"
+        izz="0.0116258093247614" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/Canhtay.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/Canhtay.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="Canhtay"
+    type="fixed">
+    <origin
+      xyz="0.0194999999999916 0 0.106000000000012"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="Canhtay" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+  <link
+    name="khau1">
+    <inertial>
+      <origin
+        xyz="-4.13493137806642E-05 0.0003628985350001 -0.00250000000001199"
+        rpy="0 0 0" />
+      <mass
+        value="0.0524164347503489" />
+      <inertia
+        ixx="4.35239434716306E-05"
+        ixy="-1.53048139557481E-08"
+        ixz="-6.43941732541486E-23"
+        iyy="5.05858137786502E-05"
+        iyz="-1.52453914850745E-19"
+        izz="9.38913554388211E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/khau1.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/khau1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="khau1"
+    type="continuous">
+    <origin
+      xyz="0 0 0"
+      rpy="0 0 0" />
+    <parent
+      link="Canhtay" />
+    <child
+      link="khau1" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="khau2">
+    <inertial>
+      <origin
+        xyz="0.0754192447353981 0.0819748072322959 0.0162654952316923"
+        rpy="0 0 0" />
+      <mass
+        value="0.284275041348943" />
+      <inertia
+        ixx="0.000986453032212979"
+        ixy="-0.00071788915821828"
+        ixz="1.02539426013537E-05"
+        iyy="0.0008140254904589"
+        iyz="1.17367739168481E-05"
+        izz="0.00175409877571628" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/khau2.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/khau2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="khau2"
+    type="revolute">
+    <origin
+      xyz="-0.00045871 -0.039997 0.06"
+      rpy="1.5708 -1.5708 0" />
+    <parent
+      link="khau1" />
+    <child
+      link="khau2" />
+    <axis
+      xyz="0 0.011468 0.99993" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="khau3">
+    <inertial>
+      <origin
+        xyz="-0.0903540730407635 0.0603235284991488 0.0615387166898664"
+        rpy="0 0 0" />
+      <mass
+        value="0.460302710763701" />
+      <inertia
+        ixx="0.000762703145032567"
+        ixy="0.000827120040717837"
+        ixz="-4.47070596710686E-06"
+        iyy="0.00147062311375389"
+        iyz="4.30485739181548E-06"
+        izz="0.00213447948516437" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/khau3.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/khau3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="khau3"
+    type="revolute">
+    <origin
+      xyz="0.1494 0.16823 -0.0019294"
+      rpy="0 0 0" />
+    <parent
+      link="khau2" />
+    <child
+      link="khau3" />
+    <axis
+      xyz="0 0.011468 0.99993" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+  <link
+    name="khau4">
+    <inertial>
+      <origin
+        xyz="-0.000434491045975427 0.0740939185399341 0.00965834317844519"
+        rpy="0 0 0" />
+      <mass
+        value="0.0790924496184435" />
+      <inertia
+        ixx="6.34828717573092E-05"
+        ixy="4.23666834492303E-07"
+        ixz="-8.57233891032023E-09"
+        iyy="1.22369184838237E-05"
+        iyz="1.10049802553249E-06"
+        izz="6.90040323712839E-05" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/khau4.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0 0 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://URDF___/meshes/khau4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="khau4"
+    type="revolute">
+    <origin
+      xyz="-0.18781 0.12402 0.0085784"
+      rpy="0 0 0" />
+    <parent
+      link="khau3" />
+    <child
+      link="khau4" />
+    <axis
+      xyz="0 0.011468 0.99993" />
+    <limit
+      lower="0"
+      upper="0"
+      effort="0"
+      velocity="0" />
+  </joint>
+</robot>

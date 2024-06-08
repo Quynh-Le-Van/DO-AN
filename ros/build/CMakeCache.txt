@@ -382,6 +382,12 @@ UBUNTU:BOOL=TRUE
 //LSB Distrib - codename tag
 UBUNTU_FOCAL:BOOL=TRUE
 
+//Value Computed by CMake
+URDF____BINARY_DIR:STATIC=/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/URDF___
+
+//Value Computed by CMake
+URDF____SOURCE_DIR:STATIC=/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/URDF___
+
 //Path to a file.
 _gmock_INCLUDES:FILEPATH=/usr/src/googletest/googlemock/include/gmock/gmock.h
 
@@ -532,6 +538,9 @@ rosgraph_DIR:PATH=/opt/ros/noetic/share/rosgraph/cmake
 
 //The directory containing a CMake configuration file for rosgraph_msgs.
 rosgraph_msgs_DIR:PATH=/opt/ros/noetic/share/rosgraph_msgs/cmake
+
+//The directory containing a CMake configuration file for roslaunch.
+roslaunch_DIR:PATH=/opt/ros/noetic/share/roslaunch/cmake
 
 //The directory containing a CMake configuration file for rospy.
 rospy_DIR:PATH=/opt/ros/noetic/share/rospy/cmake
@@ -708,7 +717,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=7
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=8
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

@@ -121,3 +121,10 @@
 /home/proteenteen/Documents/DO-AN/DO-AN/ros/build/linorobot/CMakeFiles/sensor_msgs_generate_messages_cpp.dir
 /home/proteenteen/Documents/DO-AN/DO-AN/ros/build/linorobot/CMakeFiles/lino_base.dir
 /home/proteenteen/Documents/DO-AN/DO-AN/ros/build/linorobot/CMakeFiles/edit_cache.dir
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/URDF___/CMakeFiles/install/strip.dir
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/URDF___/CMakeFiles/install/local.dir
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/URDF___/CMakeFiles/install.dir
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/URDF___/CMakeFiles/list_install_components.dir
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/URDF___/CMakeFiles/rebuild_cache.dir
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/URDF___/CMakeFiles/edit_cache.dir
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/URDF___/CMakeFiles/test.dir
