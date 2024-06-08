@@ -56,6 +56,40 @@ CMAKE_BINARY_DIR = /home/proteenteen/Documents/DO-AN/DO-AN/ros/build
 #=============================================================================
 # Targets provided globally by CMake.
 
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
+# Special rule for the target install/local
+install/local: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local
+
+# Special rule for the target install/local
+install/local/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
+	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
+.PHONY : install/local/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
+
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -89,30 +123,6 @@ test/fast: test
 
 .PHONY : test/fast
 
-# Special rule for the target install/local
-install/local: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local
-
-# Special rule for the target install/local
-install/local/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
-	/usr/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
-.PHONY : install/local/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
 # Special rule for the target install
 install: preinstall
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
@@ -124,16 +134,6 @@ install/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
 	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install/fast
-
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-
-.PHONY : list_install_components/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -168,96 +168,6 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-robot_trajectory/CMakeFiles/robot_trajectory.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/robot_trajectory.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/robot_trajectory.dir/rule
-
-# Convenience name for target.
-robot_trajectory: robot_trajectory/CMakeFiles/robot_trajectory.dir/rule
-
-.PHONY : robot_trajectory
-
-# fast build rule for target.
-robot_trajectory/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/build
-.PHONY : robot_trajectory/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-rosgraph_msgs_generate_messages_nodejs: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule
-
-.PHONY : rosgraph_msgs_generate_messages_nodejs
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_nodejs/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/build
-.PHONY : rosgraph_msgs_generate_messages_nodejs/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-rosgraph_msgs_generate_messages_lisp: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
-
-.PHONY : rosgraph_msgs_generate_messages_lisp
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_lisp/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
-.PHONY : rosgraph_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-rosgraph_msgs_generate_messages_eus: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule
-
-.PHONY : rosgraph_msgs_generate_messages_eus
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_eus/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/build
-.PHONY : rosgraph_msgs_generate_messages_eus/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/rule
-
-# Convenience name for target.
-roscpp_generate_messages_py: robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/rule
-
-.PHONY : roscpp_generate_messages_py
-
-# fast build rule for target.
-roscpp_generate_messages_py/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/build.make robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/build
-.PHONY : roscpp_generate_messages_py/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_eus: robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_eus.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_eus
-
-# fast build rule for target.
-geometry_msgs_generate_messages_eus/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build.make robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_eus.dir/build
-.PHONY : geometry_msgs_generate_messages_eus/fast
-
-# Convenience name for target.
 robot_trajectory/CMakeFiles/roscpp_generate_messages_cpp.dir/rule:
 	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
 .PHONY : robot_trajectory/CMakeFiles/roscpp_generate_messages_cpp.dir/rule
@@ -271,186 +181,6 @@ roscpp_generate_messages_cpp: robot_trajectory/CMakeFiles/roscpp_generate_messag
 roscpp_generate_messages_cpp/fast:
 	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/roscpp_generate_messages_cpp.dir/build.make robot_trajectory/CMakeFiles/roscpp_generate_messages_cpp.dir/build
 .PHONY : roscpp_generate_messages_cpp/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_py: robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_py.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_py
-
-# fast build rule for target.
-geometry_msgs_generate_messages_py/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_py.dir/build.make robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_py.dir/build
-.PHONY : geometry_msgs_generate_messages_py/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-std_msgs_generate_messages_cpp: robot_trajectory/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
-
-.PHONY : std_msgs_generate_messages_cpp
-
-# fast build rule for target.
-std_msgs_generate_messages_cpp/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make robot_trajectory/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
-.PHONY : std_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-rosgraph_msgs_generate_messages_cpp: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
-
-.PHONY : rosgraph_msgs_generate_messages_cpp
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_cpp/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
-.PHONY : rosgraph_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-roscpp_generate_messages_nodejs: robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule
-
-.PHONY : roscpp_generate_messages_nodejs
-
-# fast build rule for target.
-roscpp_generate_messages_nodejs/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/build.make robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/build
-.PHONY : roscpp_generate_messages_nodejs/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_lisp: robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_lisp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_lisp/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build.make robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_lisp.dir/build
-.PHONY : geometry_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/std_msgs_generate_messages_eus.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/std_msgs_generate_messages_eus.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/std_msgs_generate_messages_eus.dir/rule
-
-# Convenience name for target.
-std_msgs_generate_messages_eus: robot_trajectory/CMakeFiles/std_msgs_generate_messages_eus.dir/rule
-
-.PHONY : std_msgs_generate_messages_eus
-
-# fast build rule for target.
-std_msgs_generate_messages_eus/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/std_msgs_generate_messages_eus.dir/build.make robot_trajectory/CMakeFiles/std_msgs_generate_messages_eus.dir/build
-.PHONY : std_msgs_generate_messages_eus/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-rosgraph_msgs_generate_messages_py: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
-
-.PHONY : rosgraph_msgs_generate_messages_py
-
-# fast build rule for target.
-rosgraph_msgs_generate_messages_py/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
-.PHONY : rosgraph_msgs_generate_messages_py/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_cpp: robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_cpp
-
-# fast build rule for target.
-geometry_msgs_generate_messages_cpp/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build.make robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_cpp.dir/build
-.PHONY : geometry_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-geometry_msgs_generate_messages_nodejs: robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
-
-.PHONY : geometry_msgs_generate_messages_nodejs
-
-# fast build rule for target.
-geometry_msgs_generate_messages_nodejs/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build.make robot_trajectory/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/build
-.PHONY : geometry_msgs_generate_messages_nodejs/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-roscpp_generate_messages_lisp: robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
-
-.PHONY : roscpp_generate_messages_lisp
-
-# fast build rule for target.
-roscpp_generate_messages_lisp/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/build
-.PHONY : roscpp_generate_messages_lisp/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-std_msgs_generate_messages_lisp: robot_trajectory/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
-
-.PHONY : std_msgs_generate_messages_lisp
-
-# fast build rule for target.
-std_msgs_generate_messages_lisp/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make robot_trajectory/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
-.PHONY : std_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-robot_trajectory/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-std_msgs_generate_messages_nodejs: robot_trajectory/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
-
-.PHONY : std_msgs_generate_messages_nodejs
-
-# fast build rule for target.
-std_msgs_generate_messages_nodejs/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build.make robot_trajectory/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build
-.PHONY : std_msgs_generate_messages_nodejs/fast
 
 # Convenience name for target.
 robot_trajectory/CMakeFiles/roscpp_generate_messages_eus.dir/rule:
@@ -468,19 +198,169 @@ roscpp_generate_messages_eus/fast:
 .PHONY : roscpp_generate_messages_eus/fast
 
 # Convenience name for target.
-robot_trajectory/CMakeFiles/std_msgs_generate_messages_py.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/std_msgs_generate_messages_py.dir/rule
-.PHONY : robot_trajectory/CMakeFiles/std_msgs_generate_messages_py.dir/rule
+robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
-std_msgs_generate_messages_py: robot_trajectory/CMakeFiles/std_msgs_generate_messages_py.dir/rule
+rosgraph_msgs_generate_messages_nodejs: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/rule
 
-.PHONY : std_msgs_generate_messages_py
+.PHONY : rosgraph_msgs_generate_messages_nodejs
 
 # fast build rule for target.
-std_msgs_generate_messages_py/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/std_msgs_generate_messages_py.dir/build.make robot_trajectory/CMakeFiles/std_msgs_generate_messages_py.dir/build
-.PHONY : std_msgs_generate_messages_py/fast
+rosgraph_msgs_generate_messages_nodejs/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_nodejs.dir/build
+.PHONY : rosgraph_msgs_generate_messages_nodejs/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/PID_v1.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/PID_v1.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/PID_v1.dir/rule
+
+# Convenience name for target.
+PID_v1: robot_trajectory/CMakeFiles/PID_v1.dir/rule
+
+.PHONY : PID_v1
+
+# fast build rule for target.
+PID_v1/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/PID_v1.dir/build.make robot_trajectory/CMakeFiles/PID_v1.dir/build
+.PHONY : PID_v1/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/rule
+
+# Convenience name for target.
+roscpp_generate_messages_py: robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/rule
+
+.PHONY : roscpp_generate_messages_py
+
+# fast build rule for target.
+roscpp_generate_messages_py/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/build.make robot_trajectory/CMakeFiles/roscpp_generate_messages_py.dir/build
+.PHONY : roscpp_generate_messages_py/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/robot_trajectory.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/robot_trajectory.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/robot_trajectory.dir/rule
+
+# Convenience name for target.
+robot_trajectory: robot_trajectory/CMakeFiles/robot_trajectory.dir/rule
+
+.PHONY : robot_trajectory
+
+# fast build rule for target.
+robot_trajectory/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/build
+.PHONY : robot_trajectory/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule
+
+# Convenience name for target.
+roscpp_generate_messages_nodejs: robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/rule
+
+.PHONY : roscpp_generate_messages_nodejs
+
+# fast build rule for target.
+roscpp_generate_messages_nodejs/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/build.make robot_trajectory/CMakeFiles/roscpp_generate_messages_nodejs.dir/build
+.PHONY : roscpp_generate_messages_nodejs/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
+
+# Convenience name for target.
+rosgraph_msgs_generate_messages_cpp: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/rule
+
+.PHONY : rosgraph_msgs_generate_messages_cpp
+
+# fast build rule for target.
+rosgraph_msgs_generate_messages_cpp/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_cpp.dir/build
+.PHONY : rosgraph_msgs_generate_messages_cpp/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule
+
+# Convenience name for target.
+rosgraph_msgs_generate_messages_eus: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/rule
+
+.PHONY : rosgraph_msgs_generate_messages_eus
+
+# fast build rule for target.
+rosgraph_msgs_generate_messages_eus/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_eus.dir/build
+.PHONY : rosgraph_msgs_generate_messages_eus/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
+
+# Convenience name for target.
+rosgraph_msgs_generate_messages_lisp: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/rule
+
+.PHONY : rosgraph_msgs_generate_messages_lisp
+
+# fast build rule for target.
+rosgraph_msgs_generate_messages_lisp/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_lisp.dir/build
+.PHONY : rosgraph_msgs_generate_messages_lisp/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
+
+# Convenience name for target.
+roscpp_generate_messages_lisp: robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/rule
+
+.PHONY : roscpp_generate_messages_lisp
+
+# fast build rule for target.
+roscpp_generate_messages_lisp/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/build.make robot_trajectory/CMakeFiles/roscpp_generate_messages_lisp.dir/build
+.PHONY : roscpp_generate_messages_lisp/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
+
+# Convenience name for target.
+rosgraph_msgs_generate_messages_py: robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/rule
+
+.PHONY : rosgraph_msgs_generate_messages_py
+
+# fast build rule for target.
+rosgraph_msgs_generate_messages_py/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build.make robot_trajectory/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/build
+.PHONY : rosgraph_msgs_generate_messages_py/fast
+
+# Convenience name for target.
+robot_trajectory/CMakeFiles/main.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 robot_trajectory/CMakeFiles/main.dir/rule
+.PHONY : robot_trajectory/CMakeFiles/main.dir/rule
+
+# Convenience name for target.
+main: robot_trajectory/CMakeFiles/main.dir/rule
+
+.PHONY : main
+
+# fast build rule for target.
+main/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/main.dir/build.make robot_trajectory/CMakeFiles/main.dir/build
+.PHONY : main/fast
 
 src/PID_v1.o: src/PID_v1.cpp.o
 
@@ -488,7 +368,7 @@ src/PID_v1.o: src/PID_v1.cpp.o
 
 # target to build an object file
 src/PID_v1.cpp.o:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/src/PID_v1.cpp.o
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/PID_v1.dir/build.make robot_trajectory/CMakeFiles/PID_v1.dir/src/PID_v1.cpp.o
 .PHONY : src/PID_v1.cpp.o
 
 src/PID_v1.i: src/PID_v1.cpp.i
@@ -497,7 +377,7 @@ src/PID_v1.i: src/PID_v1.cpp.i
 
 # target to preprocess a source file
 src/PID_v1.cpp.i:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/src/PID_v1.cpp.i
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/PID_v1.dir/build.make robot_trajectory/CMakeFiles/PID_v1.dir/src/PID_v1.cpp.i
 .PHONY : src/PID_v1.cpp.i
 
 src/PID_v1.s: src/PID_v1.cpp.s
@@ -506,8 +386,35 @@ src/PID_v1.s: src/PID_v1.cpp.s
 
 # target to generate assembly for a file
 src/PID_v1.cpp.s:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/robot_trajectory.dir/build.make robot_trajectory/CMakeFiles/robot_trajectory.dir/src/PID_v1.cpp.s
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/PID_v1.dir/build.make robot_trajectory/CMakeFiles/PID_v1.dir/src/PID_v1.cpp.s
 .PHONY : src/PID_v1.cpp.s
+
+src/main.o: src/main.cpp.o
+
+.PHONY : src/main.o
+
+# target to build an object file
+src/main.cpp.o:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/main.dir/build.make robot_trajectory/CMakeFiles/main.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
+
+src/main.i: src/main.cpp.i
+
+.PHONY : src/main.i
+
+# target to preprocess a source file
+src/main.cpp.i:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/main.dir/build.make robot_trajectory/CMakeFiles/main.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
+
+src/main.s: src/main.cpp.s
+
+.PHONY : src/main.s
+
+# target to generate assembly for a file
+src/main.cpp.s:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f robot_trajectory/CMakeFiles/main.dir/build.make robot_trajectory/CMakeFiles/main.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 src/robot_trajectory.o: src/robot_trajectory.cpp.o
 
@@ -542,37 +449,32 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... install/strip"
+	@echo "... install/local"
+	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... test"
-	@echo "... robot_trajectory"
-	@echo "... rosgraph_msgs_generate_messages_nodejs"
-	@echo "... rosgraph_msgs_generate_messages_lisp"
-	@echo "... rosgraph_msgs_generate_messages_eus"
-	@echo "... roscpp_generate_messages_py"
-	@echo "... install/local"
-	@echo "... geometry_msgs_generate_messages_eus"
 	@echo "... roscpp_generate_messages_cpp"
-	@echo "... geometry_msgs_generate_messages_py"
-	@echo "... install/strip"
-	@echo "... std_msgs_generate_messages_cpp"
-	@echo "... install"
-	@echo "... rosgraph_msgs_generate_messages_cpp"
-	@echo "... roscpp_generate_messages_nodejs"
-	@echo "... geometry_msgs_generate_messages_lisp"
-	@echo "... std_msgs_generate_messages_eus"
-	@echo "... rosgraph_msgs_generate_messages_py"
-	@echo "... geometry_msgs_generate_messages_cpp"
-	@echo "... geometry_msgs_generate_messages_nodejs"
-	@echo "... roscpp_generate_messages_lisp"
-	@echo "... list_install_components"
-	@echo "... std_msgs_generate_messages_lisp"
-	@echo "... std_msgs_generate_messages_nodejs"
 	@echo "... roscpp_generate_messages_eus"
-	@echo "... std_msgs_generate_messages_py"
+	@echo "... rosgraph_msgs_generate_messages_nodejs"
+	@echo "... PID_v1"
+	@echo "... roscpp_generate_messages_py"
+	@echo "... robot_trajectory"
+	@echo "... install"
+	@echo "... roscpp_generate_messages_nodejs"
+	@echo "... rosgraph_msgs_generate_messages_cpp"
+	@echo "... rosgraph_msgs_generate_messages_eus"
+	@echo "... rosgraph_msgs_generate_messages_lisp"
+	@echo "... roscpp_generate_messages_lisp"
+	@echo "... rosgraph_msgs_generate_messages_py"
+	@echo "... main"
 	@echo "... src/PID_v1.o"
 	@echo "... src/PID_v1.i"
 	@echo "... src/PID_v1.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 	@echo "... src/robot_trajectory.o"
 	@echo "... src/robot_trajectory.i"
 	@echo "... src/robot_trajectory.s"

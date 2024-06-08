@@ -131,7 +131,9 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/gtest/cmake_install.cmake")
+  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/lino_msgs/cmake_install.cmake")
   include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/robot_trajectory/cmake_install.cmake")
+  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/linorobot/cmake_install.cmake")
 
 endif()
 

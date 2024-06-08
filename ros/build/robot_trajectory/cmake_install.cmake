@@ -52,3 +52,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/robot_trajectory" TYPE FILE FILES "/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/package.xml")
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/robot_trajectory" TYPE PROGRAM FILES "/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/robot_trajectory/catkin_generated/installspace/keyboard.py")
+endif()
+
