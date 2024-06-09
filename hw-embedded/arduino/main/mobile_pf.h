@@ -30,8 +30,8 @@
 #define MOTOR_ENCODER_B_1 (36)
 
 #define MOTOR_EN_2        (2)
-#define MOTOR_L_2         (40)
-#define MOTOR_R_2         (41)
+#define MOTOR_L_2         (41)
+#define MOTOR_R_2         (40)
 #define MOTOR_ENCODER_A_2 (42)
 #define MOTOR_ENCODER_B_2 (43)
 

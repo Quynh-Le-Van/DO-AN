@@ -24,7 +24,7 @@
 /* Public function prototypes ---------------------------------------- */
 void HW_PF_Init(void)
 {
-    // Serial.begin(9600);
+    Serial.begin(115200);
     Serial2.begin(9600);
 
     // Timer Init

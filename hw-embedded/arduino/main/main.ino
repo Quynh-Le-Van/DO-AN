@@ -44,35 +44,34 @@ ros::Publisher pubMobilePosMsg("pub_mobile_pos", &MobilePosMsg);
 void setup()
 {
   HW_PF_Init();
-  Serial2.begin(9600);
-
 
   // ROS Init
-  nodeHandle.initNode();
-  nodeHandle.getHardware()->setBaud(57600);
-  nodeHandle.subscribe(subMobileSpeedCmd);
-  nodeHandle.subscribe(subManiPos);
-  nodeHandle.advertise(pubMobileSpeed);
-  nodeHandle.advertise(pubMobilePosMsg);
+  // nodeHandle.initNode();
+  // nodeHandle.getHardware()->setBaud(57600);
+  // nodeHandle.subscribe(subMobileSpeedCmd);
+  // nodeHandle.subscribe(subManiPos);
+  // nodeHandle.advertise(pubMobileSpeed);
+  // nodeHandle.advertise(pubMobilePosMsg);
 
-  while (!nodeHandle.connected())
-  {
-    Serial2.println("Waiting for raspberry connect ...");
-    nodeHandle.spinOnce();
-  }
+  // while (!nodeHandle.connected())
+  // {
+  //   Serial2.println("Waiting for raspberry connect ...");
+  //   nodeHandle.spinOnce();
+  // }
 
 }
 
 void loop()
 {
 
-  Serial2.print(String("Mobile: ") + g_MobileSpeedCommand.x_vel + String(", ") + g_MobileSpeedCommand.y_vel + String(", ") + g_MobileSpeedCommand.theta_vel + String(", "));
-  Serial2.println("");
+  // Serial2.print(String("Mobile: ") + g_MobileSpeedCommand.x_vel + String(", ") + g_MobileSpeedCommand.y_vel + String(", ") + g_MobileSpeedCommand.theta_vel + String(", "));
+  // Serial2.println("");
 
-  Serial2.print(String("Manipulator: ") + g_ManiPosCommand.x_pos + String(", ") + g_ManiPosCommand.y_pos + String(", ") + g_ManiPosCommand.z_pos + String("\n"));
+  // Serial2.print(String("Manipulator: ") + g_ManiPosCommand.x_pos + String(", ") + g_ManiPosCommand.y_pos + String(", ") + g_ManiPosCommand.z_pos + String("\n"));
 
-  nodeHandle.spinOnce();
-  delay(100);
+  // nodeHandle.spinOnce();
+  delay(2000);
+  Test_SetPin(1);
 }
 
 static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)

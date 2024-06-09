@@ -77,7 +77,7 @@ PID moTrajXPID(&g_MobilePositionCurent.x_pos, &mobileVelCmd.x_vel, &mobileTrajRe
                TRAJX_PID_KI, TRAJX_PID_KD, DIRECT);
 PID moTrajYPID(&g_MobilePositionCurent.y_pos, &mobileVelCmd.y_vel, &mobileTrajRef.y_pos, TRAJY_PID_KP,
                TRAJY_PID_KI, TRAJY_PID_KD, DIRECT);
-PID moTrajTHEPID(&yawValue, &mobileVelCmd.theta_vel, &mobileTrajRef.theta, TRAJTHE_PID_KP, TRAJTHE_PID_KI,
+PID moTrajTHEPID(&g_MobilePositionCurent.theta, &mobileVelCmd.theta_vel, &mobileTrajRef.theta, TRAJTHE_PID_KP, TRAJTHE_PID_KI,
                  TRAJTHE_PID_KD, DIRECT);
 
 static Mobile_Pos_Config_T mobilePos;
@@ -264,18 +264,17 @@ void Mobile_TrackingTrajectory()
     break;
 
   case MOBILE_GO_TO_A:
+    currentTime = millis();
     while (1)
     {
       MPU_Getangle();
-      currentTime = millis();
-
-      if (millis() - currentTime >= 10)
+      if (millis() - currentTime >= 100)
       {
         tmpTime     = (double)((millis() - currentTime) / 1000.0);
         currentTime = millis();
 
         //  Get desired trajectoy
-        mobileTrajRef.x_pos = 0;
+        mobileTrajRef.x_pos = tmpTime;
         mobileTrajRef.y_pos = 0;
         mobileTrajRef.theta = 0;
 
@@ -285,12 +284,19 @@ void Mobile_TrackingTrajectory()
         moTrajTHEPID.Compute();
         Mobile_SetSpeed(mobileVelCmd);
 
-        if (Mobile_CheckDistance(1, 1, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) <= 0.1)
+        Serial.print(String("Curent Position: ") + g_MobilePositionCurent.x_pos + String(", "));
+        Serial.print(g_MobilePositionCurent.y_pos + String(", "));
+        Serial.println(g_MobilePositionCurent.theta);
+        Serial.println(tmpTime);
+
+        if (Mobile_CheckDistance(1, 0, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) <= 0.01)
         {
           // Get desired pose at A
           mobileTrajRef.x_pos = 0;
           mobileTrajRef.y_pos = 0;
           mobileTrajRef.theta = 0;
+
+          Serial.println(String("finish:"));
 
           // Calculate command velocity
           moTrajXPID.Compute();
@@ -605,7 +611,7 @@ void Test_SetPin(double x)
   x = 255;
   // Mobile_Vel_Config_T speedCommand;
 
-  // speedCommand.x_vel     = 0.5;
+  // speedCommand.x_vel     = 0.3;
   // speedCommand.y_vel     = 0;
   // speedCommand.theta_vel = 0;
   // Mobile_SetSpeed(speedCommand);
