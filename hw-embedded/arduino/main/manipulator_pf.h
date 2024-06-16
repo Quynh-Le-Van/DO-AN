@@ -29,12 +29,6 @@
 #define SERVO_GRIPPER  (1)
 
 /* Public enumerate/structure ---------------------------------------- */
-typedef struct  
-{
-  double 
-};
-
-
 /* Public macros ----------------------------------------------------- */
 /* Public variables --------------------------------------------------- */
 /* Public function prototypes ---------------------------------------- */

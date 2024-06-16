@@ -22,7 +22,7 @@
 
 /* Public defines ---------------------------------------------------- */
 #define MAX_VALUE_8_BIT   (255)
-#define PWM_DEFAULT_VALUE (200)
+#define PWM_DEFAULT_VALUE (255)
 
 #define TIMER2_SAMPLE_TIME (0.01) // 10ms
 #define TIMER1_SAMPLE_TIME (0.0018)
@@ -30,33 +30,33 @@
 #define PUBLISHER_RATE          (10)
 #define CHECK_PUBLISHER_RATE(x) (millis() - x >= 1000 / PUBLISHER_RATE)
 
-#define MOTOR1_PID_KP (0.412886103534777)
+#define MOTOR1_PID_KP (0.6)
 #define MOTOR1_PID_KD (0)
-#define MOTOR1_PID_KI (11.5416038374106)
+#define MOTOR1_PID_KI (16)
 
-#define MOTOR2_PID_KP (0.412886103534777)
+#define MOTOR2_PID_KP (0.2)
 #define MOTOR2_PID_KD (0)
-#define MOTOR2_PID_KI (11.5416038374106)
+#define MOTOR2_PID_KI (15)
 
-#define MOTOR3_PID_KP (0.408454809502108)
+#define MOTOR3_PID_KP (0.6)
 #define MOTOR3_PID_KD (0)
-#define MOTOR3_PID_KI (21.1629947821332)
+#define MOTOR3_PID_KI (16)
 
-#define MOTOR4_PID_KP (0.412886103534777)
+#define MOTOR4_PID_KP (0.7)
 #define MOTOR4_PID_KD (0)
-#define MOTOR4_PID_KI (11.5416038374106)
+#define MOTOR4_PID_KI (18)
 
-#define TRAJX_PID_KP   (6)
+#define TRAJX_PID_KP   (20)
 #define TRAJX_PID_KI   (0)
-#define TRAJX_PID_KD   (0)
+#define TRAJX_PID_KD   (0.05)
 
-#define TRAJY_PID_KP   (6)
+#define TRAJY_PID_KP   (20)
 #define TRAJY_PID_KI   (0)
-#define TRAJY_PID_KD   (0)
+#define TRAJY_PID_KD   (0.05)
 
-#define TRAJTHE_PID_KP   (6)
+#define TRAJTHE_PID_KP   (2.6)
 #define TRAJTHE_PID_KI   (0)
-#define TRAJTHE_PID_KD   (0)
+#define TRAJTHE_PID_KD   (0.1)
 
 /* Public enumerate/structure ---------------------------------------- */
 /* Public macros ----------------------------------------------------- */

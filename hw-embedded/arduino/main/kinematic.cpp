@@ -51,7 +51,7 @@ Mobile_Vel_Config_T ForwardKinematicMobileRobot(Wheel_Vel_Config_T wheel_vel)
   mobile_vel.y_vel =
     (wheel_vel.w1_vel - wheel_vel.w2_vel + wheel_vel.w3_vel - wheel_vel.w4_vel) * WHEEL_RADIUS / 4;
 
-  mobile_vel.theta_vel = (-wheel_vel.w1_vel + wheel_vel.w2_vel - wheel_vel.w3_vel + wheel_vel.w4_vel) *
+  mobile_vel.theta_vel = (-wheel_vel.w1_vel + wheel_vel.w2_vel + wheel_vel.w3_vel - wheel_vel.w4_vel) *
                          WHEEL_RADIUS / (4 * (MOBILE_LENGTH + MOBILE_WIDTH));
 
   return mobile_vel;

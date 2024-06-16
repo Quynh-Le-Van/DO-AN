@@ -20,6 +20,7 @@
 #include "kinematic.h"
 #include "platform.h"
 #include <PID_v1.h>
+#include <pidautotuner.h>
 
 /* Public defines ---------------------------------------------------- */
 #define MOTOR_EN_1        (3)
@@ -29,8 +30,8 @@
 #define MOTOR_ENCODER_B_1 (36)
 
 #define MOTOR_EN_2        (2)
-#define MOTOR_L_2         (40)
-#define MOTOR_R_2         (41)
+#define MOTOR_L_2         (41)
+#define MOTOR_R_2         (40)
 #define MOTOR_ENCODER_A_2 (42)
 #define MOTOR_ENCODER_B_2 (43)
 
@@ -50,7 +51,7 @@
 #define MOTOR_VOLREF          (24)
 
 #define MOBILE_MAX_LINEAR_VEL (0.5)
-#define MOBILE_MAX_ANGULAR_VEL (0.0625)
+#define MOBILE_MAX_ANGULAR_VEL (1)
 
 
 /* Public enumerate/structure ---------------------------------------- */
@@ -86,9 +87,27 @@ typedef struct
   int posCount;
   double velCurrent;
   uint8_t prestate;
+  double preVel;
+  double velCurrentFilter;
 } Motor_Config_T;
 
 /* Public macros ----------------------------------------------------- */
+#define MOTOR_INVERSE_DIR(x)                                             \
+  do                                                                     \
+  {                                                                      \
+    digitalWrite(MOTOR_PIN_LIST[x].dir_l, HIGH);                         \
+    digitalWrite(MOTOR_PIN_LIST[x].dir_r, LOW);                          \
+    analogWrite(MOTOR_PIN_LIST[x].enable, abs(g_MotorMobile[x].pwmOut)); \
+  } while (0)
+
+#define MOTOR_FORWARD_DIR(x)                                             \
+  do                                                                     \
+  {                                                                      \
+    digitalWrite(MOTOR_PIN_LIST[x].dir_l, LOW);                          \
+    digitalWrite(MOTOR_PIN_LIST[x].dir_r, HIGH);                         \
+    analogWrite(MOTOR_PIN_LIST[x].enable, abs(g_MotorMobile[x].pwmOut)); \
+  } while (0)
+
 /* Public variables --------------------------------------------------- */
 extern Motor_Config_T g_MotorMobile[MOTOR_MOBILE_UNKNOW];
 extern Wheel_Vel_Config_T g_MotorSpeedCommand;

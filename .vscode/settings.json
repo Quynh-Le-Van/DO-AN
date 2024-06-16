@@ -1,6 +1,9 @@
 {
     "ros.distro": "noetic",
     "files.associations": {
+        "*.ino": "cpp",
+        "*.c": "c",
+        "*.txt": "bat",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -57,6 +60,8 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "bit": "cpp"
+        "bit": "cpp",
+        "tuningpid.h": "c",
+        "pid_autotune_v0.h": "c"
     }
 }
