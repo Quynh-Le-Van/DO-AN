@@ -20,7 +20,6 @@
 #include "kinematic.h"
 #include "platform.h"
 #include <PID_v1.h>
-#include <pidautotuner.h>
 
 /* Public defines ---------------------------------------------------- */
 #define MOTOR_EN_1        (3)
@@ -47,11 +46,11 @@
 #define MOTOR_ENCODER_A_4 (24)
 #define MOTOR_ENCODER_B_4 (25)
 
-#define ENCODER_MAX_VALUE_PPR (998)
-#define MOTOR_VOLREF          (24)
+#define ENCODER_MAX_VALUE_PPR (998.0)
+#define MOTOR_VOLREF          (24.0)
 
 #define MOBILE_MAX_LINEAR_VEL (0.5)
-#define MOBILE_MAX_ANGULAR_VEL (1)
+#define MOBILE_MAX_ANGULAR_VEL (1.5)
 
 
 /* Public enumerate/structure ---------------------------------------- */
@@ -92,22 +91,6 @@ typedef struct
 } Motor_Config_T;
 
 /* Public macros ----------------------------------------------------- */
-#define MOTOR_INVERSE_DIR(x)                                             \
-  do                                                                     \
-  {                                                                      \
-    digitalWrite(MOTOR_PIN_LIST[x].dir_l, HIGH);                         \
-    digitalWrite(MOTOR_PIN_LIST[x].dir_r, LOW);                          \
-    analogWrite(MOTOR_PIN_LIST[x].enable, abs(g_MotorMobile[x].pwmOut)); \
-  } while (0)
-
-#define MOTOR_FORWARD_DIR(x)                                             \
-  do                                                                     \
-  {                                                                      \
-    digitalWrite(MOTOR_PIN_LIST[x].dir_l, LOW);                          \
-    digitalWrite(MOTOR_PIN_LIST[x].dir_r, HIGH);                         \
-    analogWrite(MOTOR_PIN_LIST[x].enable, abs(g_MotorMobile[x].pwmOut)); \
-  } while (0)
-
 /* Public variables --------------------------------------------------- */
 extern Motor_Config_T g_MotorMobile[MOTOR_MOBILE_UNKNOW];
 extern Wheel_Vel_Config_T g_MotorSpeedCommand;

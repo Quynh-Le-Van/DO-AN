@@ -41,6 +41,7 @@ ros::Publisher pubMobilePosMsg("pub_mobile_pos", &MobilePosMsg);
 void setup()
 {
   HW_PF_Init();
+  
   // ROS Init
   // nodeHandle.initNode();
   // nodeHandle.getHardware()->setBaud(57600);

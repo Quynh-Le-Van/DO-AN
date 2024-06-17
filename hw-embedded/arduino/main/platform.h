@@ -34,7 +34,7 @@
 #define MOTOR1_PID_KD (0)
 #define MOTOR1_PID_KI (16)
 
-#define MOTOR2_PID_KP (0.2)
+#define MOTOR2_PID_KP (0.5)
 #define MOTOR2_PID_KD (0)
 #define MOTOR2_PID_KI (15)
 
@@ -54,12 +54,14 @@
 #define TRAJY_PID_KI   (0)
 #define TRAJY_PID_KD   (0.05)
 
-#define TRAJTHE_PID_KP   (2.6)
+#define TRAJTHE_PID_KP   (15)
 #define TRAJTHE_PID_KI   (0)
-#define TRAJTHE_PID_KD   (0.1)
+#define TRAJTHE_PID_KD   (0)
 
 /* Public enumerate/structure ---------------------------------------- */
 /* Public macros ----------------------------------------------------- */
+#define ROUND_TO_DECIMAL_PLACES(number, decimalPlaces) (round((number) * pow(10, (decimalPlaces))) / pow(10, (decimalPlaces)))
+
 /* Public variables --------------------------------------------------- */
 /* Public function prototypes ---------------------------------------- */
 /* End of file -------------------------------------------------------- */
