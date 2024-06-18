@@ -21,7 +21,7 @@
 /* Private defines ---------------------------------------------------- */
 #define MOBILE_LENGTH (0.24)
 #define MOBILE_WIDTH  (0.10)
-#define MOBILE_DIM    (0.34)
+#define MOBILE_DIM    (0.17)
 #define WHEEL_RADIUS  (0.05)
 #define LINK_ARM_1    (0.05)
 #define LINK_ARM_2    (0.2)
@@ -52,8 +52,7 @@ Mobile_Vel_Config_T ForwardKinematicMobileRobot(Wheel_Vel_Config_T wheel_vel)
   mobile_vel.y_vel =
     (wheel_vel.w1_vel - wheel_vel.w2_vel + wheel_vel.w3_vel - wheel_vel.w4_vel) * WHEEL_RADIUS / 4;
 
-  mobile_vel.theta_vel = (-wheel_vel.w1_vel + wheel_vel.w2_vel + wheel_vel.w3_vel - wheel_vel.w4_vel) *
-                         WHEEL_RADIUS / (4 * (MOBILE_DIM));
+  mobile_vel.theta_vel = (-wheel_vel.w1_vel + wheel_vel.w2_vel + wheel_vel.w3_vel - wheel_vel.w4_vel) * (WHEEL_RADIUS / 4) * (1 / MOBILE_DIM);
 
   return mobile_vel;
 }

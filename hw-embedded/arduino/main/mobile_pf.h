@@ -46,7 +46,7 @@
 #define MOTOR_ENCODER_A_4 (24)
 #define MOTOR_ENCODER_B_4 (25)
 
-#define ENCODER_MAX_VALUE_PPR (998.0)
+#define ENCODER_MAX_VALUE_PPR (998)
 #define MOTOR_VOLREF          (24.0)
 
 #define MOBILE_MAX_LINEAR_VEL (0.5)

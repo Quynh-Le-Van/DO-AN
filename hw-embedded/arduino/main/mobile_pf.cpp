@@ -127,6 +127,8 @@ void Mobile_PIDInit(void)
   moTrajTHEPID.SetMode(AUTOMATIC);
   moTrajTHEPID.SetSampleTime(10);
   moTrajTHEPID.SetOutputLimits(-MOBILE_MAX_ANGULAR_VEL, MOBILE_MAX_ANGULAR_VEL);
+
+  memset(g_MotorMobile, 0, sizeof(g_MotorMobile));
 }
 
 void Mobile_SetSpeed(Mobile_Vel_Config_T speedCommand)
@@ -217,7 +219,7 @@ void Mobile_TrackingTrajectory()
         //  Get desired trajectoy
         // mobileTrajRef.x_pos = 0;
         // mobileTrajRef.y_pos = 0;
-        mobileTrajRef.theta = 0.52;
+        mobileTrajRef.theta = 1.57;
 
         // Calculate command velocity
         // moTrajXPID.Compute();
@@ -234,8 +236,8 @@ void Mobile_TrackingTrajectory()
         // String(", "));
         // Serial.println(String("Actual: ") + g_MobilePositionCurent.x_pos + String(", ") +
         //                g_MobilePositionCurent.y_pos + String(", ") + g_MobilePositionCurent.theta);
-        // Serial.println(String("Desired vel: ") + mobileVelCmd.x_vel + String(", ") + mobileVelCmd.y_vel +
-        //                String(", ") + mobileVelCmd.theta_vel);
+        Serial.println(String("Desired vel: ") + mobileVelCmd.x_vel + String(", ") + mobileVelCmd.y_vel +
+                       String(", ") + mobileVelCmd.theta_vel);
         // Serial.println(String("Actual vel: ") + g_MobileSpeedCurent.x_vel + String(", ") +
         // g_MobileSpeedCurent.y_vel + String(", ") + g_MobileSpeedCurent.theta_vel);
 
@@ -355,9 +357,6 @@ static void Motor_ReadEncoderCallback(void)
 
 static void Motor_ReadVelocityCallBack(void)
 {
-  // static long preTime = millis();
-  // float dt = (float)(millis() - preTime) / 1000.0;
-
   for (uint8_t index = 0; index < MOTOR_MOBILE_UNKNOW; index++)
   {
     g_MotorMobile[index].velCurrent =
@@ -370,7 +369,6 @@ static void Motor_ReadVelocityCallBack(void)
     g_MotorMobile[index].preVel       = g_MotorMobile[index].velCurrent;
     g_MotorMobile[index].encoderCount = 0;
   }
-  // preTime = millis();
 }
 
 static void Motor_SetVel()
@@ -426,12 +424,12 @@ void Test_SetPin(double x)
   // static float vel = 0;
   // // x = 255;
 
-  Mobile_Vel_Config_T speedCommand;
+  // Mobile_Vel_Config_T speedCommand;
   
-  speedCommand.x_vel     = 0.3;
-  speedCommand.y_vel     = 0;
-  speedCommand.theta_vel = 0;
-  Mobile_SetSpeed(speedCommand);
+  // speedCommand.x_vel     = 0;
+  // speedCommand.y_vel     = 0;
+  // speedCommand.theta_vel = 1.57;
+  // Mobile_SetSpeed(speedCommand);
 
   // Serial.print(g_MotorSpeedCommand.w1_vel + String(", "));
   // Serial.print(g_MotorSpeedCommand.w2_vel + String(", "));
@@ -455,10 +453,10 @@ void Test_SetPin(double x)
   //   }
   // }
   // Serial.print(0 + String(", "));
-  Serial.print(g_MotorMobile[MOTOR_MOBILE_1].velCurrent + String(", "));
-  Serial.print(g_MotorMobile[MOTOR_MOBILE_2].velCurrent + String(", "));
-  Serial.print(g_MotorMobile[MOTOR_MOBILE_3].velCurrent + String(", "));
-  Serial.println(g_MotorMobile[MOTOR_MOBILE_4].velCurrent);
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_1].velCurrent + String(", "));
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_2].velCurrent + String(", "));
+  // Serial.print(g_MotorMobile[MOTOR_MOBILE_3].velCurrent + String(", "));
+  // Serial.println(g_MotorMobile[MOTOR_MOBILE_4].velCurrent);
 
   // Serial.print(g_MotorMobile[MOTOR_MOBILE_1].velCurrentFilter + String(", "));
   // Serial.print(g_MotorMobile[MOTOR_MOBILE_2].velCurrentFilter + String(", "));
@@ -472,7 +470,7 @@ void Test_SetPin(double x)
 
   // g_MobileSpeedCurent = TransferFunctionToGlobal(Mobile_ReadCurrentSpeed(), g_MobilePositionCurent.theta);
   // Mobile_ReadCurrentPosition();
-  // Mobile_TrackingTrajectory();
+  Mobile_TrackingTrajectory();
   // Serial.print(String("Curent Position: ") + g_MobilePositionCurent.x_pos + String(", "));
   // Serial.print(g_MobilePositionCurent.y_pos + String(", "));
   // Serial.println(g_MobilePositionCurent.theta);
@@ -485,7 +483,7 @@ void Test_SetPin(double x)
 
   // Serial.print(g_MobileSpeedCurent.x_vel + String(", "));
   // Serial.print(g_MobileSpeedCurent.y_vel + String(", "));
-  // Serial.print(g_MobileSpeedCurent.theta_vel);
+  // Serial.println(g_MobileSpeedCurent.theta_vel);
   // Serial.println("");
 }
 /* End of file -------------------------------------------------------- */
