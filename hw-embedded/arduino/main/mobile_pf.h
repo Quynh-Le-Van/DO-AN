@@ -21,6 +21,9 @@
 #include "platform.h"
 #include <PID_v1.h>
 #include "Wire.h"
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
 
 /* Public defines ---------------------------------------------------- */
 #define MOTOR_EN_1        (3)
@@ -91,6 +94,22 @@ typedef struct
   double velCurrentFilter;
 } Motor_Config_T;
 
+// IMU
+typedef struct
+{
+  float ax;
+  float ay;
+  float az;
+  float gx;
+  float gy;
+  float gz;
+  float mx;
+  float my;
+  float mz;
+
+  float heading;
+} IMU_Config_T;
+
 // Mani
 typedef enum
 {
@@ -109,7 +128,7 @@ extern Mobile_Vel_Config_T g_MobileSpeedCurent;
 extern Mobile_Pos_Config_T g_MobilePositionCurent;
 extern Motor_Config_Pin_T MOTOR_PIN_LIST[MOTOR_MOBILE_UNKNOW];
 extern Manipulator_Pos_Config_T g_ManiPosCommand;
-
+extern IMU_Config_T g_IMU;
 
 /* Public function prototypes ---------------------------------------- */
 void Mobile_PIDInit(void);
@@ -119,7 +138,8 @@ Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void);
 void Test_SetPin(double vel);
 void Mobile_TrackingTrajectory();
 void Mobile_TransmitData(void *data, Data_Type_T typedata);
-void MPU_Init(void);
+void IMU_Init(void);
+void IMU_ReadAllData(void);
 
 /* End of file -------------------------------------------------------- */
 #endif //

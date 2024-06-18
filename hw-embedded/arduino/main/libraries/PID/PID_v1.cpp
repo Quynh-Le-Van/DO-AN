@@ -1,8 +1,8 @@
 /**********************************************************************************************
- * Arduino PID Library - Version 1.1.1
+ * Arduino PID Library - Version 1.2.1
  * by Brett Beauregard <br3ttb@gmail.com> brettbeauregard.com
  *
- * This Library is licensed under a GPLv3 License
+ * This Library is licensed under the MIT License
  **********************************************************************************************/
 
 #if ARDUINO >= 100
@@ -24,7 +24,6 @@ PID::PID(double* Input, double* Output, double* Setpoint,
     myInput = Input;
     mySetpoint = Setpoint;
     inAuto = false;
-    enableLowPassFilter = false;
 
     PID::SetOutputLimits(0, 255);				//default output limit corresponds to
 												//the arduino pwm limits
@@ -81,17 +80,7 @@ bool PID::Compute()
       else output = 0;
 
       /*Compute Rest of PID Output*/
-      if (enableLowPassFilter) 
-      {
-         // Low pass filter for D term 
-         double filteredD = prevD * (1 - (dFilter/(dFilter+SampleTime))) + kd * dInput * (dFilter/(dFilter+SampleTime));
-         output += outputSum - filteredD;
-         prevD = filteredD;
-      }
-      else
-      {
-         output += outputSum - kd * dInput;
-      }
+      output += outputSum - kd * dInput;
 
 	    if(output > outMax) output = outMax;
       else if(output < outMin) output = outMin;
@@ -222,12 +211,6 @@ void PID::SetControllerDirection(int Direction)
    controllerDirection = Direction;
 }
 
-void PID::SetLowFilter(bool enable, double Filter)
-{
-   enableLowPassFilter = enable;
-   dFilter = Filter;
-}				  
-
 /* Status Funcions*************************************************************
  * Just because you set the Kp=-1 doesn't mean it actually happened.  these
  * functions query the internal state of the PID.  they're here for display
@@ -238,4 +221,3 @@ double PID::GetKi(){ return  dispKi;}
 double PID::GetKd(){ return  dispKd;}
 int PID::GetMode(){ return  inAuto ? AUTOMATIC : MANUAL;}
 int PID::GetDirection(){ return controllerDirection;}
-

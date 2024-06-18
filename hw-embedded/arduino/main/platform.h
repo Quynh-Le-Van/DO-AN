@@ -22,13 +22,14 @@
 
 /* Public defines ---------------------------------------------------- */
 #define MAX_VALUE_8_BIT   (255)
-#define PWM_DEFAULT_VALUE (200)
+#define PWM_DEFAULT_VALUE (255)
 
 #define TIMER2_SAMPLE_TIME (0.009984) // 10ms
 #define TIMER1_SAMPLE_TIME (0.0018)
 
+#define DEGREE_TO_RAD(x)       (((x) * M_PI) / (180.0))
 #define PUBLISHER_RATE          (10)
-#define CHECK_PUBLISHER_RATE(x) (millis() - x >= 1000 / PUBLISHER_RATE)
+#define CHECK_PUBLISHER_RATE(x) (millis() - (x) >= 1000 / PUBLISHER_RATE)
 
 #define MOTOR1_PID_KP (0.460464335792483)
 #define MOTOR1_PID_KD (0)

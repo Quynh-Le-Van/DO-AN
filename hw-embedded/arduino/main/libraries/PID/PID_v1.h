@@ -1,6 +1,6 @@
 #ifndef PID_v1_h
 #define PID_v1_h
-#define LIBRARY_VERSION	1.1.1
+#define LIBRARY_VERSION	1.2.1
 
 class PID
 {
@@ -51,7 +51,7 @@ class PID
     void SetSampleTime(int);              // * sets the frequency, in Milliseconds, with which 
                                           //   the PID calculation is performed.  default is 100
 										  
-	void SetLowFilter(bool enable, double Filter);				  
+										  
 										  
   //Display functions ****************************************************************
 	double GetKp();						  // These functions query the pid for interal values.
@@ -80,12 +80,10 @@ class PID
                                   //   what these values are.  with pointers we'll just know.
 			  
 	unsigned long lastTime;
-	double outputSum, lastInput, prevD, dFilter;
+	double outputSum, lastInput;
 
 	unsigned long SampleTime;
 	double outMin, outMax;
 	bool inAuto, pOnE;
-  bool enableLowPassFilter;       // Enble Low pass filter for D term 
 };
 #endif
-

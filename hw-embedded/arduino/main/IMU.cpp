@@ -1,7 +1,7 @@
 #include "IMU.h"
 
 IMU::IMU(uint8_t periodMs){
-  _bno = Adafruit_BNO055(55,IMU_ADDRESS,&Wire1);
+  _bno = Adafruit_BNO055(55,IMU_ADDRESS,&Wire);
   _periodS = (float) periodMs / 1000.0;
   _accPosConst = (double) _periodS * _periodS;
   _degToRadConst = 0.01745329252;
