@@ -58,13 +58,13 @@ Manipulator_Pos_Config_T g_ManiPosCommand;
 
 /* Private variables -------------------------------------------------- */
 // PID MOTOR
-PID motorPID1(&g_MotorMobile[MOTOR_MOBILE_1].velCurrent, &g_MotorMobile[MOTOR_MOBILE_1].pwmOut,
+PID motorPID1(&g_MotorMobile[MOTOR_MOBILE_1].velCurrentFilter, &g_MotorMobile[MOTOR_MOBILE_1].pwmOut,
               &g_MotorSpeedCommand.w1_vel, MOTOR1_PID_KP, MOTOR1_PID_KI, MOTOR1_PID_KD, DIRECT);
-PID motorPID2(&g_MotorMobile[MOTOR_MOBILE_2].velCurrent, &g_MotorMobile[MOTOR_MOBILE_2].pwmOut,
+PID motorPID2(&g_MotorMobile[MOTOR_MOBILE_2].velCurrentFilter, &g_MotorMobile[MOTOR_MOBILE_2].pwmOut,
               &g_MotorSpeedCommand.w2_vel, MOTOR2_PID_KP, MOTOR2_PID_KI, MOTOR2_PID_KD, DIRECT);
-PID motorPID3(&g_MotorMobile[MOTOR_MOBILE_3].velCurrent, &g_MotorMobile[MOTOR_MOBILE_3].pwmOut,
+PID motorPID3(&g_MotorMobile[MOTOR_MOBILE_3].velCurrentFilter, &g_MotorMobile[MOTOR_MOBILE_3].pwmOut,
               &g_MotorSpeedCommand.w3_vel, MOTOR3_PID_KP, MOTOR3_PID_KI, MOTOR3_PID_KD, DIRECT);
-PID motorPID4(&g_MotorMobile[MOTOR_MOBILE_4].velCurrent, &g_MotorMobile[MOTOR_MOBILE_4].pwmOut,
+PID motorPID4(&g_MotorMobile[MOTOR_MOBILE_4].velCurrentFilter, &g_MotorMobile[MOTOR_MOBILE_4].pwmOut,
               &g_MotorSpeedCommand.w4_vel, MOTOR4_PID_KP, MOTOR4_PID_KI, MOTOR4_PID_KD, DIRECT);
 
 // PID Mobile Tracking Trajectory
@@ -146,6 +146,8 @@ void Mobile_PIDInit(void)
   moTrajTHEPID.SetOutputLimits(-MOBILE_MAX_ANGULAR_VEL, MOBILE_MAX_ANGULAR_VEL);
   moTrajTHEPID.SetLowFilter(false, 0);
 
+  memset(g_MotorMobile, 0, sizeof(g_MotorMobile));
+
   MPU_Init();
 
   // Servo1.attach(9, 45);
@@ -171,10 +173,10 @@ Mobile_Vel_Config_T Mobile_ReadCurrentSpeed(void)
   Mobile_Vel_Config_T mobileVel;
   Wheel_Vel_Config_T wheelVel;
 
-  wheelVel.w1_vel = g_MotorMobile[MOTOR_MOBILE_1].velCurrent;
-  wheelVel.w2_vel = g_MotorMobile[MOTOR_MOBILE_2].velCurrent;
-  wheelVel.w3_vel = g_MotorMobile[MOTOR_MOBILE_3].velCurrent;
-  wheelVel.w4_vel = g_MotorMobile[MOTOR_MOBILE_4].velCurrent;
+  wheelVel.w1_vel = g_MotorMobile[MOTOR_MOBILE_1].velCurrentFilter;
+  wheelVel.w2_vel = g_MotorMobile[MOTOR_MOBILE_2].velCurrentFilter;
+  wheelVel.w3_vel = g_MotorMobile[MOTOR_MOBILE_3].velCurrentFilter;
+  wheelVel.w4_vel = g_MotorMobile[MOTOR_MOBILE_4].velCurrentFilter;
 
   mobileVel = ForwardKinematicMobileRobot(wheelVel);
   return mobileVel;
@@ -544,6 +546,12 @@ static void Motor_ReadVelocityCallBack(void)
   {
     g_MotorMobile[index].velCurrent =
       60.0 * g_MotorMobile[index].encoderCount / (ENCODER_MAX_VALUE_PPR * TIMER2_SAMPLE_TIME);
+
+    g_MotorMobile[index].velCurrentFilter = 0.854 * g_MotorMobile[index].velCurrentFilter +
+                                            0.0728 * g_MotorMobile[index].velCurrent +
+                                            0.0728 * g_MotorMobile[index].preVel;
+
+    g_MotorMobile[index].preVel       = g_MotorMobile[index].velCurrent;
     g_MotorMobile[index].encoderCount = 0;
   }
 }
@@ -555,6 +563,8 @@ static void Motor_SetVel()
   motorPID3.Compute();
   motorPID4.Compute();
 
+  g_MotorMobile[MOTOR_MOBILE_3].pwmOut = 1.3 * g_MotorMobile[MOTOR_MOBILE_3].pwmOut;
+  
   for (uint8_t index = 0; index < MOTOR_MOBILE_UNKNOW; index++)
   {
     if (g_MotorMobile[index].pwmOut >= 0)
@@ -574,6 +584,7 @@ static Mobile_Vel_Config_T TransferFunctionToGlobal(Mobile_Vel_Config_T local, d
 
   global.x_vel = local.x_vel * cos(theta) - local.y_vel * sin(theta);
   global.y_vel = local.x_vel * sin(theta) + local.y_vel * cos(theta);
+  global.theta_vel = local.theta_vel;
 
   return global;
 }

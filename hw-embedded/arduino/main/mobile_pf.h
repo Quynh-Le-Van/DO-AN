@@ -87,6 +87,8 @@ typedef struct
   int posCount;
   double velCurrent;
   uint8_t prestate;
+  double preVel;
+  double velCurrentFilter;
 } Motor_Config_T;
 
 // Mani

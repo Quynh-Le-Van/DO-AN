@@ -24,7 +24,7 @@
 #define MAX_VALUE_8_BIT   (255)
 #define PWM_DEFAULT_VALUE (200)
 
-#define TIMER2_SAMPLE_TIME (0.01) // 10ms
+#define TIMER2_SAMPLE_TIME (0.009984) // 10ms
 #define TIMER1_SAMPLE_TIME (0.0018)
 
 #define PUBLISHER_RATE          (10)
