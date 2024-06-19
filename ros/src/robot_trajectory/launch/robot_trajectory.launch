@@ -1,0 +1,3 @@
+<launch>
+    <node name = "RobotTrajectory" type = "main" pkg = "robot_trajectory" output = "screen"/>
+</launch>

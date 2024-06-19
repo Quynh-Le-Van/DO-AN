@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/include/robot_trajectory/PID_v1.hpp
+
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/include/robot_trajectory/robot_trajectory.hpp
+robot_trajectory/PID_v1.hpp
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/include/robot_trajectory/robot_trajectory/PID_v1.hpp
+stdint.h
+-
+math.h
+-
+
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/src/robot_trajectory.cpp
+robot_trajectory/robot_trajectory.hpp
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/src/robot_trajectory/robot_trajectory.hpp
+robot_trajectory/PID_v1.hpp
+/home/proteenteen/Documents/DO-AN/DO-AN/ros/src/robot_trajectory/src/robot_trajectory/PID_v1.hpp
+iostream
+-
+

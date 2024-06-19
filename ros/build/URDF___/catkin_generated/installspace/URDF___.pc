@@ -1,0 +1,8 @@
+prefix=/home/proteenteen/Documents/DO-AN/DO-AN/ros/install
+
+Name: URDF___
+Description: Description of URDF___
+Version: 1.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

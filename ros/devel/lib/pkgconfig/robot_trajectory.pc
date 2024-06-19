@@ -1,0 +1,8 @@
+prefix=/home/proteenteen/Documents/DO-AN/DO-AN/ros/devel
+
+Name: robot_trajectory
+Description: Description of robot_trajectory
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
