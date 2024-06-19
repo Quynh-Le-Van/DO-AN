@@ -61,8 +61,8 @@ void setup()
   HW_PF_Init();
 
   // ROS Init
+  nodeHandle.getHardware()->setBaud(115200);
   nodeHandle.initNode();
-  nodeHandle.getHardware()->setBaud(57600);
   nodeHandle.subscribe(subMobileSpeedCmd);
   nodeHandle.subscribe(subManiPos);
   nodeHandle.advertise(pubMobileSpeed);
@@ -72,7 +72,7 @@ void setup()
 
   while (!nodeHandle.connected())
   {
-    Serial2.println("Waiting for raspberry connect ...");
+    Serial2.println("Waiting for raspberry connect ");
     nodeHandle.spinOnce();
   }
 }
