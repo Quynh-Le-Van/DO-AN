@@ -1,5 +1,5 @@
 <launch>
-    <arg name="repeat_rate" default="10.0" />
+    <arg name="repeat_rate" default="100.0" />
 
     <node name="keyboard" pkg="robot_trajectory" type="keyboard.py" output="screen">
         <param name="repeat_rate" value="$(arg repeat_rate)" />

@@ -634,8 +634,8 @@ void Test_SetPin(double x)
   // Serial.print(g_IMU.heading + String(", "));
   // Serial.print(g_MotorSpeedCommand.w2_vel + String(", "));
   // Serial.print(g_MotorSpeedCommand.w3_vel + String(", "));
-  Serial.print(g_IMU.heading, 5);
-  Serial.println(String(""));
+  // Serial.print(g_IMU.heading, 5);
+  // Serial.println(String(""));
 
   // Serial.print(g_MotorSpeedCommand.w1_vel + String(", "));
   // Serial.print(g_MotorSpeedCommand.w2_vel + String(", "));

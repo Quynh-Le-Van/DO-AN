@@ -67,8 +67,8 @@ void setup()
   nodeHandle.subscribe(subManiPos);
   nodeHandle.advertise(pubMobileSpeed);
   nodeHandle.advertise(pubMobilePosMsg);
-  // nodeHandle.advertise(pubIMUData);
-  // nodeHandle.advertise(pubOdomMobile);
+  nodeHandle.advertise(pubIMUData);
+  nodeHandle.advertise(pubOdomMobile);
 
   while (!nodeHandle.connected())
   {
@@ -80,17 +80,17 @@ void setup()
 void loop()
 {
 
-  Serial2.print(String("Mobile: ") + g_MobileSpeedCommand.x_vel + String(", ") + g_MobileSpeedCommand.y_vel + String(", ") + g_MobileSpeedCommand.theta_vel + String(", "));
-  Serial2.println("");
+  // Serial2.print(String("Mobile: ") + g_MobileSpeedCommand.x_vel + String(", ") + g_MobileSpeedCommand.y_vel + String(", ") + g_MobileSpeedCommand.theta_vel + String(", "));
+  // Serial2.println("");
 
   // Serial2.print(String("Manipulator: ") + g_ManiPosCommand.x_pos + String(", ") + g_ManiPosCommand.y_pos + String(", ") + g_ManiPosCommand.z_pos + String("\n"));
 
-  // Test_SetPin(1);
-  // IMUPublishData();
-  // MobileOdomPublish();
+  Test_SetPin(1);
+  IMUPublishData();
+  MobileOdomPublish();
   // pubMobilePosMsg.publish(&MobilePosMsg);
   nodeHandle.spinOnce();
-  delay(10);
+  // delay(1);
 }
 
 static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)
