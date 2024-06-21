@@ -54,10 +54,19 @@ Mobile_Vel_Config_T g_MobileSpeedCommand;
 Mobile_Vel_Config_T g_MobileSpeedCurent;
 Mobile_Pos_Config_T g_MobilePositionCurent;
 Mobile_Pos_Config_T g_MobilePositionCurentRos;
+Mobile_Pos_Config_T g_OdomPos;
+Mobile_Vel_Config_T g_OdomVel;
 
 Manipulator_Pos_Config_T g_ManiPosCommand;
+Manipulator_Pos_Config_T g_ManiPosCurrent;
+bool g_IsGripper;
 
+// IMU config
 IMU_Config_T g_IMU;
+
+// Control state
+Control_Command_T g_ControlCommand;
+Control_Command_T g_preControlCommand;
 
 /* Private variables -------------------------------------------------- */
 // PID MOTOR
@@ -106,6 +115,7 @@ static void Motor_ReadVelocityCallBack(void);
 static void Motor_SetVel(void);
 static Mobile_Vel_Config_T TransferFunctionToGlobal(Mobile_Vel_Config_T localMobile, double theta);
 static double Mobile_CheckDistance(double x, double y, double x1, double y1);
+static void Robot_ResetPostion(void);
 
 /* Function definitions ----------------------------------------------- */
 void Mobile_PIDInit(void)
@@ -149,16 +159,41 @@ void IMU_Init(void)
   {
     Serial.println("no BNO055 detected");
   }
+  // bno.setExtCrystalUse(true);
+
+  adafruit_bno055_offsets_t calibrationData;
+  calibrationData.accel_offset_x = -9;
+  calibrationData.accel_offset_y = -27;
+  calibrationData.accel_offset_z = -15;
+  calibrationData.gyro_offset_x = -1;
+  calibrationData.gyro_offset_y = -2;
+  calibrationData.gyro_offset_z = -1;
+  calibrationData.mag_offset_z = -15;
+  calibrationData.mag_offset_x = -1;
+  calibrationData.mag_offset_y = -2;
+  calibrationData.accel_radius = 1000;
+  calibrationData.mag_radius = 567;
+  bno.setSensorOffsets(calibrationData);
 }
 
 void IMU_ReadAllData(void)
 {
   sensors_event_t orientationData , angVelocityData, magnetometerData, accelerometerData;
+  float tmpAccX = 0, tmpAccY = 0, tmpAccZ = 0;
 
   bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
   bno.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
   bno.getEvent(&magnetometerData, Adafruit_BNO055::VECTOR_MAGNETOMETER);
-  bno.getEvent(&accelerometerData, Adafruit_BNO055::VECTOR_ACCELEROMETER);
+
+  for(uint8_t i = 0; i < 10; i++)
+  {
+    bno.getEvent(&accelerometerData, Adafruit_BNO055::VECTOR_LINEARACCEL);
+    tmpAccX += (accelerometerData.acceleration.x);
+    tmpAccY += (accelerometerData.acceleration.x);
+    tmpAccZ += (accelerometerData.acceleration.x);
+  }
+
+  bno.getEvent(&accelerometerData, Adafruit_BNO055::VECTOR_LINEARACCEL);
 
   g_IMU.heading = DEGREE_TO_RAD(360.0 - orientationData.orientation.x);
 
@@ -265,21 +300,30 @@ void Mobile_TransmitData(void *data, Data_Type_T typedata)
   }
 }
 
+void Mobile_ControlManual(void)
+{
+  Robot_ResetPostion();
+  Mobile_SetSpeed(g_MobileSpeedCommand);
+}
+
 void Mobile_TrackingTrajectory()
 {
 #define SAMPLE_TIME (0.01) // second
 #define TIME_SIM    (100)  // second
 
-  static MOBILE_STATE_T mobileState = 1000;
+  static MOBILE_STATE_T mobileState = MOBILE_START;
 
   unsigned long startTime       = 0;
   unsigned long desiredDuration = TIME_SIM; // 10 seconds
   unsigned long currentTime     = 0;
   double tmpTime                = 0;
+  char tmpStr[128] = "gripperclose";
 
   switch (mobileState)
   {
   case MOBILE_START:
+
+    Robot_ResetPostion();
 
     // Start position 
     mobileTrajRef.x_pos = 0;
@@ -296,10 +340,27 @@ void Mobile_TrackingTrajectory()
     break;
 
   case MOBILE_GO_TO_A:
-    if (millis() - currentTime >= 100)
+    if (millis() - currentTime >= 10)
     {
       tmpTime     = (double)((millis() - currentTime) / 1000.0);
       currentTime = millis();
+
+      if (Mobile_CheckDistance(1, 0, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) <= 0.01)
+      {
+        // Get desired pose at A
+        mobileTrajRef.x_pos = 0;
+        mobileTrajRef.y_pos = 0;
+        mobileTrajRef.theta = 0;
+
+        // Calculate command velocity
+        moTrajXPID.Compute();
+        moTrajYPID.Compute();
+        moTrajTHEPID.Compute();
+        Mobile_SetSpeed(mobileVelCmd);
+
+        // mobileState = MANI_PICK_UP;
+        // break;
+      }
 
       //  Get desired trajectoy
       mobileTrajRef.x_pos = tmpTime;
@@ -312,29 +373,6 @@ void Mobile_TrackingTrajectory()
       moTrajTHEPID.Compute();
       Mobile_SetSpeed(mobileVelCmd);
 
-      Serial.print(String("Curent Position: ") + g_MobilePositionCurent.x_pos + String(", "));
-      Serial.print(g_MobilePositionCurent.y_pos + String(", "));
-      Serial.println(g_MobilePositionCurent.theta);
-      Serial.println(tmpTime);
-
-      if (Mobile_CheckDistance(1, 0, g_MobilePositionCurent.x_pos, g_MobilePositionCurent.y_pos) <= 0.01)
-      {
-        // Get desired pose at A
-        mobileTrajRef.x_pos = 0;
-        mobileTrajRef.y_pos = 0;
-        mobileTrajRef.theta = 0;
-
-        Serial.println(String("finish:"));
-
-        // Calculate command velocity
-        moTrajXPID.Compute();
-        moTrajYPID.Compute();
-        moTrajTHEPID.Compute();
-        Mobile_SetSpeed(mobileVelCmd);
-
-        mobileState = MANI_PICK_UP;
-        break;
-      }
     }
     break;
 
@@ -619,6 +657,22 @@ ISR(TIMER2_OVF_vect)
   // IMU_ReadAllData();
   Motor_ReadVelocityCallBack();
   Mobile_ReadCurrentPosition();
+}
+
+static void Robot_ResetPostion(void)
+{
+  char tmpStr[128] = "gripperclose";
+
+  if (g_preControlCommand != g_ControlCommand)
+  {
+    g_MobilePositionCurent.x_pos = 0;
+    g_MobilePositionCurent.y_pos = 0;
+    g_MobilePositionCurent.theta = 0;
+
+    g_ManiPosCurrent = { 0.2, 0, 0.3};
+    Mobile_TransmitData((void *)(&g_ManiPosCurrent), DATA_POS);
+    Mobile_TransmitData((void *)tmpStr , DATA_GRIPPER_CLOSE);
+  }
 }
 
 void Test_SetPin(double x)

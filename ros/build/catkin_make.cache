@@ -1,2 +1,2 @@
-URDF___:lino_msgs:linorobot:robot_trajectory
+geographic_info/geodesy:geographic_info/geographic_info:geographic_info/geographic_msgs:lino_msgs:linorobot:robot_localization:robot_trajectory:unique_identifier/unique_id:unique_identifier/unique_identifier:unique_identifier/uuid_msgs
 -DCATKIN_DEVEL_PREFIX=/home/proteenteen/Documents/DO-AN/DO-AN/ros/devel -DCMAKE_INSTALL_PREFIX=/home/proteenteen/Documents/DO-AN/DO-AN/ros/install -G Unix Makefiles

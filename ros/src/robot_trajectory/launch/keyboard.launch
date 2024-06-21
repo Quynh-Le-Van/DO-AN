@@ -1,8 +1,11 @@
 <launch>
-    <arg name="repeat_rate" default="100.0" />
+    <!-- Launch control_command_node -->
+    <node pkg="robot_trajectory" type="control_command.py" name="control_command_node" output="screen"/>
+        <param name="default_value" value="0"/>
+    <node>
 
     <node name="keyboard" pkg="robot_trajectory" type="keyboard.py" output="screen">
-        <param name="repeat_rate" value="$(arg repeat_rate)" />
+        <param name="repeat_rate" value="100" />
         <!-- Add other parameters as needed -->
     </node>
 </launch>

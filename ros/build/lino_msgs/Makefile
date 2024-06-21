@@ -168,6 +168,21 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/rule
+.PHONY : lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/rule
+
+# Convenience name for target.
+_lino_msgs_generate_messages_check_deps_PID: lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/rule
+
+.PHONY : _lino_msgs_generate_messages_check_deps_PID
+
+# fast build rule for target.
+_lino_msgs_generate_messages_check_deps_PID/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/build.make lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/build
+.PHONY : _lino_msgs_generate_messages_check_deps_PID/fast
+
+# Convenience name for target.
 lino_msgs/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule:
 	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 lino_msgs/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
 .PHONY : lino_msgs/CMakeFiles/geometry_msgs_generate_messages_nodejs.dir/rule
@@ -453,51 +468,6 @@ std_msgs_generate_messages_cpp/fast:
 .PHONY : std_msgs_generate_messages_cpp/fast
 
 # Convenience name for target.
-lino_msgs/CMakeFiles/_catkin_empty_exported_target.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 lino_msgs/CMakeFiles/_catkin_empty_exported_target.dir/rule
-.PHONY : lino_msgs/CMakeFiles/_catkin_empty_exported_target.dir/rule
-
-# Convenience name for target.
-_catkin_empty_exported_target: lino_msgs/CMakeFiles/_catkin_empty_exported_target.dir/rule
-
-.PHONY : _catkin_empty_exported_target
-
-# fast build rule for target.
-_catkin_empty_exported_target/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f lino_msgs/CMakeFiles/_catkin_empty_exported_target.dir/build.make lino_msgs/CMakeFiles/_catkin_empty_exported_target.dir/build
-.PHONY : _catkin_empty_exported_target/fast
-
-# Convenience name for target.
-lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/rule
-.PHONY : lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/rule
-
-# Convenience name for target.
-lino_msgs_generate_messages_py: lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/rule
-
-.PHONY : lino_msgs_generate_messages_py
-
-# fast build rule for target.
-lino_msgs_generate_messages_py/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/build.make lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/build
-.PHONY : lino_msgs_generate_messages_py/fast
-
-# Convenience name for target.
-lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/rule:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/rule
-.PHONY : lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/rule
-
-# Convenience name for target.
-_lino_msgs_generate_messages_check_deps_PID: lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/rule
-
-.PHONY : _lino_msgs_generate_messages_check_deps_PID
-
-# fast build rule for target.
-_lino_msgs_generate_messages_check_deps_PID/fast:
-	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/build.make lino_msgs/CMakeFiles/_lino_msgs_generate_messages_check_deps_PID.dir/build
-.PHONY : _lino_msgs_generate_messages_check_deps_PID/fast
-
-# Convenience name for target.
 lino_msgs/CMakeFiles/lino_msgs_generate_messages_cpp.dir/rule:
 	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 lino_msgs/CMakeFiles/lino_msgs_generate_messages_cpp.dir/rule
 .PHONY : lino_msgs/CMakeFiles/lino_msgs_generate_messages_cpp.dir/rule
@@ -542,6 +512,21 @@ lino_msgs_genlisp/fast:
 	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f lino_msgs/CMakeFiles/lino_msgs_genlisp.dir/build.make lino_msgs/CMakeFiles/lino_msgs_genlisp.dir/build
 .PHONY : lino_msgs_genlisp/fast
 
+# Convenience name for target.
+lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/rule:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f CMakeFiles/Makefile2 lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/rule
+.PHONY : lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/rule
+
+# Convenience name for target.
+lino_msgs_generate_messages_py: lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/rule
+
+.PHONY : lino_msgs_generate_messages_py
+
+# fast build rule for target.
+lino_msgs_generate_messages_py/fast:
+	cd /home/proteenteen/Documents/DO-AN/DO-AN/ros/build && $(MAKE) -f lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/build.make lino_msgs/CMakeFiles/lino_msgs_generate_messages_py.dir/build
+.PHONY : lino_msgs_generate_messages_py/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -550,12 +535,13 @@ help:
 	@echo "... depend"
 	@echo "... install/strip"
 	@echo "... install/local"
-	@echo "... install"
+	@echo "... _lino_msgs_generate_messages_check_deps_PID"
 	@echo "... geometry_msgs_generate_messages_nodejs"
 	@echo "... geometry_msgs_generate_messages_cpp"
 	@echo "... geometry_msgs_generate_messages_py"
 	@echo "... lino_msgs_generate_messages"
 	@echo "... std_msgs_generate_messages_eus"
+	@echo "... install"
 	@echo "... lino_msgs_generate_messages_eus"
 	@echo "... lino_msgs_generate_messages_lisp"
 	@echo "... std_msgs_generate_messages_py"
@@ -572,14 +558,12 @@ help:
 	@echo "... lino_msgs_gennodejs"
 	@echo "... test"
 	@echo "... std_msgs_generate_messages_cpp"
-	@echo "... _catkin_empty_exported_target"
-	@echo "... lino_msgs_generate_messages_py"
-	@echo "... _lino_msgs_generate_messages_check_deps_PID"
 	@echo "... lino_msgs_generate_messages_cpp"
 	@echo "... lino_msgs_generate_messages_nodejs"
 	@echo "... lino_msgs_genlisp"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... lino_msgs_generate_messages_py"
 .PHONY : help
 
 

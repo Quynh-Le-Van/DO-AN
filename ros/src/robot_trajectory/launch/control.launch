@@ -1,0 +1,6 @@
+<launch>
+    <!-- Launch control_command_node -->
+    <node pkg="robot_trajectory" type="control_command.py" name="control_command_node" output="screen"/>
+        <param name="default_value" value="0"/>
+    </node>
+</launch>

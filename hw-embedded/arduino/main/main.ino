@@ -25,6 +25,8 @@
 #include "geometry_msgs/Quaternion.h"
 #include <sensor_msgs/Imu.h>
 #include <tf/tf.h>
+#include <std_msgs/Int32.h>
+#include <std_msgs/Bool.h>
 
 /* Private enumerate/structure ---------------------------------------- */
 /* Private macros ----------------------------------------------------- */
@@ -33,6 +35,9 @@ static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg);
 static void ManipulatorCommandCallback(const geometry_msgs::Point &cmdPos);
 static void IMUPublishData(void);
 static void MobileOdomPublish(void);
+static void OdomCallback(const nav_msgs::Odometry &odom);
+static void ControlCommandCallback(const std_msgs::Int32& msg);
+static void IsGripperCallback(const std_msgs::Bool &isGripper);
 
 /* Public variables --------------------------------------------------- */
 /* Private variables -------------------------------------------------- */
@@ -40,6 +45,9 @@ static void MobileOdomPublish(void);
 ros::NodeHandle nodeHandle;
 ros::Subscriber<geometry_msgs::Twist> subMobileSpeedCmd("cmd_vel", MobileSpeedCommandCallback);
 ros::Subscriber<geometry_msgs::Point> subManiPos("arm_position", ManipulatorCommandCallback);
+ros::Subscriber<nav_msgs::Odometry> subOdom("odom", OdomCallback);
+ros::Subscriber<std_msgs::Int32> subControlCommand("control_command", ControlCommandCallback);
+ros::Subscriber<std_msgs::Bool> subGripper("gripper_state", IsGripperCallback); 
 
 geometry_msgs::Twist MobileSpeedMsg;
 ros::Publisher pubMobileSpeed("pub_mobile_speed", &MobileSpeedMsg);
@@ -61,36 +69,59 @@ void setup()
   HW_PF_Init();
 
   // ROS Init
-  nodeHandle.getHardware()->setBaud(115200);
-  nodeHandle.initNode();
-  nodeHandle.subscribe(subMobileSpeedCmd);
-  nodeHandle.subscribe(subManiPos);
-  nodeHandle.advertise(pubMobileSpeed);
-  nodeHandle.advertise(pubMobilePosMsg);
-  nodeHandle.advertise(pubIMUData);
-  nodeHandle.advertise(pubOdomMobile);
+  // nodeHandle.getHardware()->setBaud(115200);
+  // nodeHandle.initNode();
+  // nodeHandle.subscribe(subMobileSpeedCmd);
+  // nodeHandle.subscribe(subOdom);
+  // nodeHandle.subscribe(subManiPos);
+  // nodeHandle.subscribe(subControlCommand);
+  // nodeHandle.subscribe(subGripper);
+  // nodeHandle.advertise(pubMobileSpeed);
+  // nodeHandle.advertise(pubMobilePosMsg);
+  // nodeHandle.advertise(pubIMUData);
+  // nodeHandle.advertise(pubOdomMobile);
 
-  while (!nodeHandle.connected())
-  {
-    Serial2.println("Waiting for raspberry connect ");
-    nodeHandle.spinOnce();
-  }
+  // while (!nodeHandle.connected())
+  // {
+  //   Serial2.println("Waiting for raspberry connect ");
+  //   nodeHandle.spinOnce();
+  // }
 }
 
 void loop()
 {
 
-  // Serial2.print(String("Mobile: ") + g_MobileSpeedCommand.x_vel + String(", ") + g_MobileSpeedCommand.y_vel + String(", ") + g_MobileSpeedCommand.theta_vel + String(", "));
-  // Serial2.println("");
+  // Serial2.println(String("Pos: ") + g_OdomPos.x_pos + String(", ") + g_OdomPos.y_pos + String(", ") + g_OdomPos.theta + String("\n"));
+  // Serial.println(String("Acc: ") + g_IMU.ax + String(", ") + g_IMU.ay + String(", ") + g_IMU.az + String("\n"));
 
-  // Serial2.print(String("Manipulator: ") + g_ManiPosCommand.x_pos + String(", ") + g_ManiPosCommand.y_pos + String(", ") + g_ManiPosCommand.z_pos + String("\n"));
+  // Serial.print(g_IMU.ax, 5);
+  // Serial.println("");
 
+  // Implement task command
+  // if (g_ControlCommand == COMMAND_CONTROL_MANUAL)
+  // {
+  //   Mobile_ControlManual();
+  //   Mobile_TransmitData((void *)(&g_IsGripper), (g_IsGripper) ? (DATA_GRIPPER_CLOSE) : (DATA_GRIPPER_OPEN));
+  //   Mobile_TransmitData((void *)(&g_ManiPosCommand), DATA_POS);
+
+  //   g_preControlCommand = g_ControlCommand;
+  // }
+  // else if (g_ControlCommand == COMMAND_CONTROL_AUTO)
+  // {
+  //   Test_SetPin(1);
+  //   g_preControlCommand = g_ControlCommand;
+  // }
+
+  // // Read data from sensor if needed
+  // IMU_ReadAllData(); 
+
+  // // Publish data to ros
+  // IMUPublishData();
+  // MobileOdomPublish();
+
+  // // Spin once
+  // nodeHandle.spinOnce();
   Test_SetPin(1);
-  IMUPublishData();
-  MobileOdomPublish();
-  // pubMobilePosMsg.publish(&MobilePosMsg);
-  nodeHandle.spinOnce();
-  // delay(1);
 }
 
 static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)
@@ -105,6 +136,27 @@ static void ManipulatorCommandCallback(const geometry_msgs::Point &cmdPos)
   g_ManiPosCommand.x_pos = cmdPos.x;
   g_ManiPosCommand.y_pos = cmdPos.y;
   g_ManiPosCommand.z_pos =cmdPos.z;
+}
+
+static void OdomCallback(const nav_msgs::Odometry &odom)
+{
+  g_OdomPos.x_pos = odom.pose.pose.position.x;
+  g_OdomPos.y_pos = odom.pose.pose.position.y;
+  g_OdomPos.theta = g_IMU.heading;
+
+  g_OdomVel.x_vel = odom.twist.twist.linear.x;
+  g_OdomVel.y_vel = odom.twist.twist.linear.y;
+  g_OdomVel.theta_vel = odom.twist.twist.angular.z;
+}
+
+static void ControlCommandCallback(const std_msgs::Int32& msg)
+{
+  g_ControlCommand = msg.data; 
+}
+
+static void IsGripperCallback(const std_msgs::Bool &isGripper)
+{
+  g_IsGripper == isGripper.data;
 }
 
 static void IMUPublishData(void)
@@ -153,15 +205,15 @@ static void MobileOdomPublish(void)
   odom.pose.covariance[35] = 0.001;
 
   //linear speed from encoders
-  odom.twist.twist.linear.x = g_MobileSpeedCommand.x_vel;
-  odom.twist.twist.linear.y = g_MobileSpeedCommand.y_vel;
+  odom.twist.twist.linear.x = g_MobileSpeedCurent.x_vel;
+  odom.twist.twist.linear.y = g_MobileSpeedCurent.y_vel;
   odom.twist.twist.linear.z = 0.0;
 
   odom.twist.twist.angular.x = 0.0;
   odom.twist.twist.angular.y = 0.0;
 
   //angular speed from encoders
-  odom.twist.twist.angular.z = g_MobileSpeedCommand.theta_vel;
+  odom.twist.twist.angular.z = g_MobileSpeedCurent.theta_vel; //TODO: use BN0500
   odom.twist.covariance[0] = 0.0001;
   odom.twist.covariance[7] = 0.0001;
   odom.twist.covariance[35] = 0.0001;

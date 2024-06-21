@@ -119,6 +119,12 @@ typedef enum
   DATA_GRIPPER_CLOSE
 } Data_Type_T;
 
+typedef enum
+{
+  COMMAND_CONTROL_MANUAL,
+  COMMAND_CONTROL_AUTO,
+} Control_Command_T;
+
 /* Public macros ----------------------------------------------------- */
 /* Public variables --------------------------------------------------- */
 extern Motor_Config_T g_MotorMobile[MOTOR_MOBILE_UNKNOW];
@@ -128,7 +134,15 @@ extern Mobile_Vel_Config_T g_MobileSpeedCurent;
 extern Mobile_Pos_Config_T g_MobilePositionCurent;
 extern Motor_Config_Pin_T MOTOR_PIN_LIST[MOTOR_MOBILE_UNKNOW];
 extern Manipulator_Pos_Config_T g_ManiPosCommand;
+extern Mobile_Pos_Config_T g_OdomPos;
+extern Mobile_Vel_Config_T g_OdomVel;
 extern IMU_Config_T g_IMU;
+extern Control_Command_T g_ControlCommand;
+extern bool g_IsGripper;
+extern bool g_IsResetPosition;
+extern bool g_IsSwitchModeControl;
+extern Control_Command_T g_preControlCommand;
+
 
 /* Public function prototypes ---------------------------------------- */
 void Mobile_PIDInit(void);
@@ -136,7 +150,8 @@ void Mobile_SetSpeed(Mobile_Vel_Config_T speedCommand);
 Mobile_Vel_Config_T Mobile_ReadCurrentSpeed(void);
 Mobile_Pos_Config_T Mobile_ReadCurrentPosition(void);
 void Test_SetPin(double vel);
-void Mobile_TrackingTrajectory();
+void Mobile_TrackingTrajectory(void);
+void Mobile_ControlManual(void);
 void Mobile_TransmitData(void *data, Data_Type_T typedata);
 void IMU_Init(void);
 void IMU_ReadAllData(void);

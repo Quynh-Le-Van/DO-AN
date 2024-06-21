@@ -131,10 +131,16 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/gtest/cmake_install.cmake")
+  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/geographic_info/geographic_info/cmake_install.cmake")
   include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/lino_msgs/cmake_install.cmake")
+  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/unique_identifier/unique_identifier/cmake_install.cmake")
+  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/unique_identifier/uuid_msgs/cmake_install.cmake")
+  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/geographic_info/geographic_msgs/cmake_install.cmake")
   include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/robot_trajectory/cmake_install.cmake")
   include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/linorobot/cmake_install.cmake")
-  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/URDF___/cmake_install.cmake")
+  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/robot_localization/cmake_install.cmake")
+  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/unique_identifier/unique_id/cmake_install.cmake")
+  include("/home/proteenteen/Documents/DO-AN/DO-AN/ros/build/geographic_info/geodesy/cmake_install.cmake")
 
 endif()
 
