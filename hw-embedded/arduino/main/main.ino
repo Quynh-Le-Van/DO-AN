@@ -61,35 +61,43 @@ void setup()
   HW_PF_Init();
 
   // ROS Init
-  // nodeHandle.initNode();
-  // nodeHandle.getHardware()->setBaud(57600);
-  // nodeHandle.subscribe(subMobileSpeedCmd);
-  // nodeHandle.subscribe(subManiPos);
-  // nodeHandle.advertise(pubMobileSpeed);
-  // nodeHandle.advertise(pubMobilePosMsg);
+  nodeHandle.initNode();
+  nodeHandle.getHardware()->setBaud(57600);
+  nodeHandle.subscribe(subMobileSpeedCmd);
+  nodeHandle.subscribe(subManiPos);
+  nodeHandle.advertise(pubMobileSpeed);
+  nodeHandle.advertise(pubMobilePosMsg);
   // nodeHandle.advertise(pubIMUData);
   // nodeHandle.advertise(pubOdomMobile);
 
-  // while (!nodeHandle.connected())
-  // {
-  //   Serial2.println("Waiting for raspberry connect ...");
-  //   nodeHandle.spinOnce();
-  // }
-
+  while (!nodeHandle.connected())
+  {
+    Serial2.println("Waiting for raspberry connect ...");
+    nodeHandle.spinOnce();
+  }
 }
 
 void loop()
 {
 
-  // Serial2.print(String("Mobile: ") + g_MobileSpeedCommand.x_vel + String(", ") + g_MobileSpeedCommand.y_vel + String(", ") + g_MobileSpeedCommand.theta_vel + String(", "));
-  // Serial2.println("");
+  Serial2.print(String("Mobile: ") + g_MobileSpeedCommand.x_vel + String(", ") + g_MobileSpeedCommand.y_vel + String(", ") + g_MobileSpeedCommand.theta_vel + String(", "));
+  Serial2.println("");
 
   // Serial2.print(String("Manipulator: ") + g_ManiPosCommand.x_pos + String(", ") + g_ManiPosCommand.y_pos + String(", ") + g_ManiPosCommand.z_pos + String("\n"));
 
+<<<<<<< HEAD
   // nodeHandle.spinOnce();
   // delay(2000);
   // Test_SetPin(1);
 
+=======
+  // Test_SetPin(1);
+  // IMUPublishData();
+  // MobileOdomPublish();
+  // pubMobilePosMsg.publish(&MobilePosMsg);
+  nodeHandle.spinOnce();
+  delay(10);
+>>>>>>> 1815a13913631188b1bd926821f6623c7fc0ab76
 }
 
 static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)
@@ -133,7 +141,7 @@ static void MobileOdomPublish(void)
 {
   geometry_msgs::Quaternion odom_quat = tf::createQuaternionFromYaw(g_IMU.heading);
 
-  odom.header.stamp = ros::Time::now();
+  odom.header.stamp = nodeHandle.now();
   odom.header.frame_id = "odom";
   odom.child_frame_id = "base_footprint";
   
