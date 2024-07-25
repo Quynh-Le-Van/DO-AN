@@ -143,3 +143,52 @@ function dMdthetai = Com_dMdthetai(M, thetai)
                             diff(M(2,1), thetai), diff(M(2,2), thetai), diff(M(2,3), thetai);...
                             diff(M(3,1), thetai), diff(M(3,2), thetai), diff(M(3,3), thetai)]);
 end   
+
+
+% %% Init
+% a=0; % distance to interest point in meters (m)
+% b=0.2; % height 
+% c=0;
+% l1=0.25;
+% l2=0.25;
+% l3=0.1;
+
+% %% Jacobian Matrix
+% J11 = cos(phi);
+% J12 = -sin(phi);
+% J13 = -a*sin(phi)-l1*cos(theta2)*sin(phi+theta1)-l2*cos(theta2+theta3)*sin(phi+theta1) - l3*sin(phi+theta1);
+% J14 = -l1*cos(theta2)*sin(phi+theta1)-l2*cos(theta2+theta3)*sin(phi+theta1) - l3*sin(phi+theta1);
+% J15 = -l1*sin(theta2)*cos(phi+theta1)-l2*sin(theta2+theta3)*cos(phi+theta1);
+% J16 = -l2*sin(theta2+theta3)*cos(phi+theta1);
+
+% J21 = sin(phi);
+% J22 = cos(phi);
+% J23 = a*cos(phi)+l1*cos(theta2)*cos(phi+theta1)+l2*cos(theta2+theta3)*cos(phi+theta1) + l3*cos(phi+theta1);
+% J24 = l1*cos(theta2)*cos(phi+theta1)+l2*cos(theta2+theta3)*cos(phi+theta1) + l3*cos(phi+theta1);
+% J25 = -l1*sin(theta2)*sin(phi+theta1)-l2*sin(theta2+theta3)*sin(phi+theta1);
+% J26 = -l2*sin(theta2+theta3)*sin(phi+theta1);
+
+% J31 = 0;
+% J32 = 0;
+% J33 = 0;
+% J34 = 0;
+% J35 = l1*cos(theta2)+l2*cos(theta2+theta3);
+% J36 = l2*cos(theta2+theta3);
+
+% J=[J11 J12 J13 J14 J15 J16;...
+%       J21 J22 J23 J24 J25 J26;...
+%       J31 J32 J33 J34 J35 J36];
+      
+
+
+J11 = -l1*cos(theta2)*sin(theta1)-l2*cos(theta2+theta3)*sin(theta1) - l3*sin(theta1);
+J12 = -l1*sin(theta2)*cos(theta1)-l2*sin(theta2+theta3)*cos(theta1);
+J13 = -l2*sin(theta2+theta3)*cos(theta1);
+
+J21 = l1*cos(theta2)*cos(theta1)+l2*cos(theta2+theta3)*cos(theta1) + l3*cos(theta1);
+J22 = -l1*sin(theta2)*sin(theta1)-l2*sin(theta2+theta3)*sin(theta1);
+J23 = -l2*sin(theta2+theta3)*sin(theta1);
+
+J34 = 0;
+J35 = l1*cos(theta2)+l2*cos(theta2+theta3);
+J36 = l2*cos(theta2+theta3);

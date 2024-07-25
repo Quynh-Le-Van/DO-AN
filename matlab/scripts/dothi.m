@@ -3,6 +3,10 @@ dataXYTrajectory = load('D:\Documents\DOAN\DO-AN\matlab\datamat\dothi\vitri.mat'
 dataVelocity = load('D:\Documents\cdt\sim\DataMat\DataVelocityofMobilePlatform.mat');
 dataError = load('D:\Documents\cdt\sim\DataMat\DataErrorofMobilePlatform.mat');
 dataWheel = load ('D:\Documents\DOAN\DO-AN\matlab\datamat\dothi\banhxe.mat')
+dataXZTrajectory = load('D:\Documents\DOAN\DO-AN\matlab\datamat\dothi\canhtay.mat');
+
+
+xy = load('D:\Documents\DOAN\DO-AN\matlab\datamat\tmp\vitri.mat');
 
 % =========================Plot data trajectory figure ============================= 
 figure;
@@ -10,7 +14,7 @@ figure;
 % Plot data tranjectory of mobile platform
 Trajectory_X = dataXYTrajectory.ans(2,:);
 Trajectory_Y = dataXYTrajectory.ans(3,:);
-plot(Trajectory_X, Trajectory_Y,'k-.');
+plot(Trajectory_X, Trajectory_Y,'b-.', 'LineWidth', 1.5);
 hold on
 
 
@@ -27,7 +31,7 @@ figure;
 % Plot x(t)
 Trajectory_t = dataXYTrajectory.ans(1,:);
 Trajectory_X = dataXYTrajectory.ans(2,:);
-plot(Trajectory_t, Trajectory_X,'k-.');
+plot(Trajectory_t, Trajectory_X,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -44,7 +48,7 @@ figure;
 Trajectory_t = dataXYTrajectory.ans(1,:);
 Trajectory_Y = dataXYTrajectory.ans(3,:);
 
-plot(Trajectory_t, Trajectory_Y,'k-.');
+plot(Trajectory_t, Trajectory_Y,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -60,7 +64,7 @@ figure;
 
 Velocity_t = dataVelocity.ans(1,:);
 Velocity_X = dataVelocity.ans(2,:);
-plot(Velocity_t, Velocity_X,'k-.');
+plot(Velocity_t, Velocity_X,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -75,7 +79,7 @@ figure;
 
 Velocity_t = dataVelocity.ans(1,:);
 Velocity_Y = dataVelocity.ans(3,:);
-plot(Velocity_t, Velocity_Y,'k-.');
+plot(Velocity_t, Velocity_Y,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -91,7 +95,7 @@ figure;
 
 Error_t = dataError.ans(1,:);
 Error_X = dataError.ans(2,:);
-plot(Error_t, Error_X,'k-.');
+plot(Error_t, Error_X,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -106,7 +110,7 @@ figure;
 
 Error_t = dataError.ans(1,:);
 Error_Y = dataError.ans(3,:);
-plot(Error_t, Error_Y,'k-.');
+plot(Error_t, Error_Y,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -122,7 +126,7 @@ figure;
 
 AnVelovity_t = dataWheel.ans(1,:);
 W1 = dataWheel.ans(2,:);
-plot(AnVelovity_t, W1,'k-.');
+plot(AnVelovity_t, W1,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -137,7 +141,7 @@ figure;
 
 AnVelovity_t = dataWheel.ans(1,:);
 W2 = dataWheel.ans(3,:);
-plot(AnVelovity_t, W2,'k-.');
+plot(AnVelovity_t, W2,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -152,7 +156,7 @@ figure;
 
 AnVelovity_t = dataWheel.ans(1,:);
 W3 = dataWheel.ans(4,:);
-plot(AnVelovity_t, W3,'k-.');
+plot(AnVelovity_t, W3,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -167,7 +171,7 @@ figure;
 
 AnVelovity_t = dataWheel.ans(1,:);
 W4 = dataWheel.ans(5,:);
-plot(AnVelovity_t, W4,'k-.');
+plot(AnVelovity_t, W4,'b-.', 'LineWidth', 1.5);
 hold on
 
 % Config plot feature
@@ -177,3 +181,51 @@ ylabel('W4 (rad/s)');
 legend ('Angular Velocity')
 grid on
 
+
+% Plot data figure 
+figure;
+
+% Plot data tranjectory of manipulator 
+t1 = dataXZTrajectory.ans(1,:);
+
+mni_X = dataXZTrajectory.ans(2,:);
+
+plot(t1, mni_X,'b-.', 'LineWidth', 1.5);
+hold on
+
+xlabel('Time(s)');
+ylabel('X (m)');
+legend ('X position')
+grid on
+
+% Plot data figure 
+figure;
+
+% Plot data tranjectory of manipulator 
+t1 = dataXZTrajectory.ans(1,:);
+
+mni_Y = dataXZTrajectory.ans(3,:);
+
+plot(t1, mni_Y,'b-.', 'LineWidth', 1.5);
+hold on
+
+xlabel('Time(s)');
+ylabel('Y (m)');
+legend ('Y position')
+grid on
+
+% Plot data figure 
+figure;
+
+% Plot data tranjectory of manipulator 
+t1 = dataXZTrajectory.ans(1,:);
+
+mni_Z = dataXZTrajectory.ans(4,:);
+
+plot(t1, mni_Z,'b-.', 'LineWidth', 1.5);
+hold on
+
+xlabel('Time(s)');
+ylabel('Z (m)');
+legend ('Z position')
+grid on
