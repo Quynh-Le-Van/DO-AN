@@ -85,19 +85,16 @@ void loop()
 
   // Serial2.print(String("Manipulator: ") + g_ManiPosCommand.x_pos + String(", ") + g_ManiPosCommand.y_pos + String(", ") + g_ManiPosCommand.z_pos + String("\n"));
 
-<<<<<<< HEAD
   // nodeHandle.spinOnce();
   // delay(2000);
   // Test_SetPin(1);
 
-=======
   // Test_SetPin(1);
   // IMUPublishData();
   // MobileOdomPublish();
   // pubMobilePosMsg.publish(&MobilePosMsg);
   nodeHandle.spinOnce();
   delay(10);
->>>>>>> 1815a13913631188b1bd926821f6623c7fc0ab76
 }
 
 static void MobileSpeedCommandCallback(const geometry_msgs::Twist &cmdSpeedMsg)
